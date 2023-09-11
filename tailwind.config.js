@@ -22,6 +22,7 @@ export default {
       "accent-300": "#CC5567",
       "accent-600": "#C02B41",
       "accent-950": "#B3001B",
+      transparent: "transparent",
     },
     gradientColorStops: {
       "red-950": "#B31B00",

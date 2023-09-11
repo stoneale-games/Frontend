@@ -6,9 +6,11 @@ import vector from "./assets/vector.png";
 import playVector from "./assets/play_vector.png";
 import card1 from "./assets/card1.png";
 import card2 from "./assets/card2.png";
+import { useLocation } from 'react-router-dom';
 
 function App() {
-  const isConnected = false;
+  const isConnected = true;
+  const location = useLocation();
   return (
     <div className='bg-primary-950 w-screen h-screen overflow-hidden'>
       {
@@ -28,7 +30,10 @@ function App() {
           </div>
         </section>
       }
-      <Header />
+      {/* Show this kind of header when its not connected or when not on dashboard */}
+      {
+        (!isConnected || location.pathname !== "/") && <Header isConnected={isConnected} />
+      }
       {
         isConnected ? <ConnectedLayout /> : <Homepage />
       }

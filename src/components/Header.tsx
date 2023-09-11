@@ -2,8 +2,7 @@ import React from 'react';
 import logo from "../assets/logo.png";
 import Brightness4OutlinedIcon from '@mui/icons-material/Brightness4Outlined';
 
-const Header = () => {
-    const isConnected = false;
+const Header = ({ isConnected }: { isConnected: boolean }) => {
     return isConnected ? <IsConnectedHeader /> : <NotConnectedHeader />;
 }
 
