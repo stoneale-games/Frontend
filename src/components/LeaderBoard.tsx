@@ -3,7 +3,7 @@ import cp from "../assets/cp.png";
 import { friends } from "../utils/data/friends";
 
 const LeaderBoard = () => {
-    return <section className="w-64 p-5 bg-primary-blue overflow-auto rounded-lg">
+    return <section className="w-64 p-5 bg-primary-blue-300 overflow-auto rounded-lg">
         <h2 className="text-center text-white-950 font-semibold">Leader board</h2>
         <ul className="flex flex-col gap-4 mt-4">
             {friends.map(({ name, imgSrc, cp }, index) => <LeaderBoardAvatar key={index} name={name} imgSrc={imgSrc} cpIndex={cp} index={index} />)}

@@ -3,7 +3,7 @@ import cp from "../assets/cp.png";
 import { friends } from "../utils/data/friends";
 
 const FriendsList = () => {
-    return <section className="flex gap-12 items-center bg-primary-blue rounded-xl p-4">
+    return <section className="flex gap-12 items-center bg-primary-blue-300 rounded-xl p-4">
         <div className="flex flex-col gap-6 justify-between items-center">
             <h3 className="text-white-950">Friend List</h3>
             <div className="flex flex-col gap-2">

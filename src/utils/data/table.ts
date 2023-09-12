@@ -1,0 +1,87 @@
+export const tableHeader = [
+  "Table",
+  "Rate",
+  "Game",
+  "Players",
+  "Average Stack",
+];
+
+export const tableData = [
+  {
+    table: "Table no 1",
+    rate: "200/200",
+    game: "Limited holding",
+    players: "7/10",
+    avgStack: "5000",
+  },
+  {
+    table: "Table no 2",
+    rate: "200/200",
+    game: "Limited holding",
+    players: "7/10",
+    avgStack: "5000",
+  },
+  {
+    table: "Table no 3",
+    rate: "200/200",
+    game: "Limited holding",
+    players: "7/10",
+    avgStack: "5000",
+  },
+  {
+    table: "Table no 4",
+    rate: "200/200",
+    game: "Limited holding",
+    players: "7/10",
+    avgStack: "5000",
+  },
+  {
+    table: "Table no 5",
+    rate: "200/200",
+    game: "Limited holding",
+    players: "7/10",
+    avgStack: "5000",
+  },
+  {
+    table: "Table no 6",
+    rate: "200/200",
+    game: "Limited holding",
+    players: "7/10",
+    avgStack: "5000",
+  },
+  {
+    table: "Table no 7",
+    rate: "200/200",
+    game: "Limited holding",
+    players: "7/10",
+    avgStack: "5000",
+  },
+  {
+    table: "Table no 8",
+    rate: "200/200",
+    game: "Limited holding",
+    players: "7/10",
+    avgStack: "5000",
+  },
+  {
+    table: "Table no 9",
+    rate: "200/200",
+    game: "Limited holding",
+    players: "7/10",
+    avgStack: "5000",
+  },
+  {
+    table: "Table no 10",
+    rate: "200/200",
+    game: "Limited holding",
+    players: "7/10",
+    avgStack: "5000",
+  },
+  {
+    table: "Table no 11",
+    rate: "200/200",
+    game: "Limited holding",
+    players: "7/10",
+    avgStack: "5000",
+  },
+];

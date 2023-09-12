@@ -1,32 +1,17 @@
-import Header from "../components/Header";
-import ProfileBox from "../components/ProfileBox";
-import avatar from "../assets/avatar.png";
-import { navs } from "../utils/data/nav";
-import NavCard from "../components/NavCard";
-import FriendsList from "../components/FriendsList";
-import LeaderBoard from "../components/LeaderBoard";
+import Board from "../components/Board"
+import BoardActions from "../components/BoardActions"
+import BoardInfo from "../components/BoardInfo"
+import BoardMessage from "../components/BoardMessage"
 
 const Dashboard = () => {
-    return <div className="flex">
-        <aside className="w-72 h-screen relative bg-primary-blue flex flex-col overflow-y-auto">
-            <ProfileBox imgSrc={avatar} name="Zara" cpIndex="000005" starIndex="12" />
-            <nav>
-                <ul className="flex flex-col items-center gap-6 py-4">
-                    {navs.map(({ imgSrc, title, to }, index) => <NavCard key={index} to={to} imgSrc={imgSrc} title={title} />)}
-                </ul>
-            </nav>
-        </aside>
-        <section className="h-screen flex-1 flex py-4 px-12 flex-col">
-            <Header isConnected={true} />
-            <main className="flex flex-col flex-1 gap-4">
-                <section className="flex-1 flex">
-                    <div className="flex-1"></div>
-                    <LeaderBoard />
-                </section>
-                <FriendsList />
-            </main>
+    return <section className="relative h-[calc(100vh-60px)]">
+        <Board />
+        <section className="absolute px-16 flex justify-between items-end bottom-6 left-0 right-0">
+            <BoardMessage />
+            <BoardActions />
+            <BoardInfo />
         </section>
-    </div>
+    </section>
 }
 
-export default Dashboard;
+export default Dashboard

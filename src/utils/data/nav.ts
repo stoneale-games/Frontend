@@ -7,21 +7,40 @@ export const navs = [
   {
     imgSrc: nft,
     title: "NFTs",
-    to: "/"
+    to: "/",
   },
   {
     imgSrc: wallet,
     title: "Wallet",
-    to: "/"
+    to: "/wallet",
   },
   {
     imgSrc: book,
     title: "Read Rules",
-    to: "/"
+    to: "/",
   },
   {
     imgSrc: games,
     title: "Games",
-    to: "/"
+    to: "/",
+  },
+];
+
+export const dashboardNav = [
+  {
+    title: "Create Game",
+    action: () => {},
+  },
+  {
+    title: "Seat & Go",
+    action: () => {},
+  },
+  {
+    title: "Weekly Game",
+    action: () => {},
+  },
+  {
+    title: "Tournament",
+    action: () => {},
   },
 ];
