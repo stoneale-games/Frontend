@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ["./src/*.tsx", "./src/**/*.tsx", "./src/**/**/*.tsx"],
+  darkMode: "class", // Enable class-based dark mode
   theme: {
     extend: {},
     colors: {
@@ -16,6 +17,7 @@ export default {
       "secondary-600": "#F1DCBB",
       "secondary-950": "#EED5AE",
       "white-100": "#717171",
+      "white-background": "#FDF9FA",
       "white-300": "#FDFAFB",
       "white-600": "#FEFBFC",
       "white-950": "#FEFCFC",

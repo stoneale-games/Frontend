@@ -40,3 +40,20 @@
 .read-the-docs {
   color: #888;
 }
+/* src/styles/darkMode.css */
+.dark body {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+.dark .bg-primary-blue-300 {
+  background-color: #1a1c25;
+}
+
+.dark .text-accent-950 {
+  color: #ff5a5f;
+}
+
+.dark .bg-white-950 {
+  background-color: #333333;
+}
