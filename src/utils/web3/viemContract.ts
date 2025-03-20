@@ -1,9 +1,7 @@
-import React from "react";
-
 let ALCHEMY_KEY_OP = "your_key_here";
 let ALCHEMY_KEY_POLYGON = "your_key_here";
 let ALCHEMY_KEY_ARB = "your_key_here";
-let INFURA_KEY_POLYGON = "your_key_here";
+// let INFURA_KEY_POLYGON = "your_key_here";
 
 import {
   cptPolyAddr,
@@ -13,7 +11,6 @@ import {
   cpMinterABI,
   cpMintArb,
   cptArbAddr,
-  cpFaucetArb,
   cptBaseAddr,
   cpMintBase,
   cptABI,
@@ -65,7 +62,7 @@ import { base } from "./customChains"; // mainnet, arbitrum
 const alchemyAPI_P = ALCHEMY_KEY_POLYGON; // hopefully this is the fix!
 const alchemyAPI_OP = ALCHEMY_KEY_OP;
 const alchemyAPI_ARB = ALCHEMY_KEY_ARB;
-const infuraAPI = INFURA_KEY_POLYGON;
+// const infuraAPI = INFURA_KEY_POLYGON;
 
 // using websocket connections to RPC for speed
 
@@ -78,13 +75,13 @@ const alArbWs = webSocket(
 );
 
 // fallbacks only, not currently in use
-const alOp = http("https://opt-mainnet.g.alchemy.com/v2/" + alchemyAPI_OP);
-const alPoly = http("https://polygon-mainnet.g.alchemy.com/v2/" + alchemyAPI_P);
-const infPoly = http("https://polygon-mainnet.infura.io/v3/" + infuraAPI);
+// const alOp = http("https://opt-mainnet.g.alchemy.com/v2/" + alchemyAPI_OP);
+// const alPoly = http("https://polygon-mainnet.g.alchemy.com/v2/" + alchemyAPI_P);
+// const infPoly = http("https://polygon-mainnet.infura.io/v3/" + infuraAPI);
 
 const baseMainnet = http("https://developer-access-mainnet.base.org");
 
-const lastChance = http();
+// const lastChance = http();
 
 // VIEM PUBLIC CLIENTS
 export var myClient = createPublicClient({

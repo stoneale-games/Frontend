@@ -1,4 +1,3 @@
-import table from "../assets/table.png";
 import play from "../assets/play.png";
 import poker from "../assets/poker.png";
 import game from "../assets/game.png";

@@ -8,7 +8,6 @@ import card1 from "./assets/card1.png";
 import card2 from "./assets/card2.png";
 import { useLocation } from "react-router-dom";
 import { useTheme } from "./contexts/ThemeContext";
-import { useAccount } from "wagmi";
 import useAuthStore from "./store/authStore";
 
 function App() {

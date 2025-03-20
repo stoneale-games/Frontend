@@ -1,5 +1,3 @@
-import React from "react";
-
 export const avalanche = {
   id: 43_114,
   name: "Avalanche",

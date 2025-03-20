@@ -1,5 +1,3 @@
-import React from "react";
-
 // returns a deck of cards object that can be used to build a hand, with IPFS art metadata
 export function buildDeck() {
   var deck = [

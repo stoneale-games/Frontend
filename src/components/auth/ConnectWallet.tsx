@@ -1,5 +1,4 @@
 import { Box, Modal } from "@mui/material";
-import React, { useState } from "react";
 import { WalletOptions } from "../wallet-options";
 
 const style = {
