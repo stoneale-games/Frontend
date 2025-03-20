@@ -25,7 +25,11 @@ export function WalletOptions({ onClose }: { onClose: () => void }) {
           nonce: data.requestChallenge.nonce,
           isNewUser: data.requestChallenge.isNewUser,
         });
-        await handleConfirm();
+
+        handleConfirm({
+          nonce: data.requestChallenge.nonce,
+          isNewUser: data.requestChallenge.isNewUser,
+        });
       }
     },
   });
@@ -47,17 +51,23 @@ export function WalletOptions({ onClose }: { onClose: () => void }) {
     },
   });
 
-  const handleConfirm = async () => {
+  const handleConfirm = async ({
+    nonce,
+    isNewUser,
+  }: {
+    nonce: string;
+    isNewUser: boolean;
+  }) => {
     if (signData && address) {
       const signature = await signMessageAsync({
-        message: signData.nonce as string,
+        message: nonce as string,
       });
       verifyChallenge({
         variables: {
           address,
           signature,
-          nonce: signData?.nonce,
-          isNewUser: signData?.isNewUser,
+          nonce,
+          isNewUser,
         },
       });
     }
