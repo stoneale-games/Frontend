@@ -6,12 +6,28 @@ import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import VolumeUpOutlinedIcon from "@mui/icons-material/VolumeUpOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { DisplayContext } from "../contexts/displays";
 import { messages } from "../utils/data/messages";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import ThemeToggle from "./ThemeToggle";
 
+import { WalletOptions } from "./wallet-options";
+import { Box, Modal } from "@mui/material";
+import Web3Auth from "./auth/Web3-auth";
+
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "transparent",
+  border: "0px solid #000",
+  pt: 2,
+  px: 4,
+  pb: 3,
+};
 const Header = ({ isConnected }: { isConnected: boolean }) => {
   return isConnected ? <IsConnectedHeader /> : <NotConnectedHeader />;
 };
@@ -57,13 +73,13 @@ const IsConnectedHeader = () => {
 };
 
 const NotConnectedHeader = () => {
+  const [showModal, setShowModal] = useState(false);
   return (
     <header className=" h-14 w-full flex items-center justify-between px-12 z-10 relative">
       {/* <Brightness4OutlinedIcon className="text-secondary-950" /> */}
+
       <ThemeToggle />
-      <button className="dark:bg-primary-100 bg-secondary-950 px-4 h-10 flex items-center border border-secondary-100 rounded-md dark:text-secondary-100">
-        Connect Wallet
-      </button>
+      <Web3Auth />
     </header>
   );
 };
