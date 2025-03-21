@@ -6,7 +6,7 @@ import ErrorBoundary from "./ErrorBoundary";
 
 const BoardMessage = () => {
     const { state } = useGame();
-    const { isGameStarted, phase, players } = state;
+    const { isGameStarted, phase } = state;
     const [gameMessages, setGameMessages] = useState<string[]|[]>([]);
     
     // Update messages when game state changes

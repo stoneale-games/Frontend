@@ -8,7 +8,7 @@ import ErrorBoundary from "./ErrorBoundary";
 const BoardActions = () => {
     const [value, setValue] = useState(60);
     const { state, dispatch } = useGame();
-    const { isGameStarted, phase } = state;
+    const { isGameStarted} = state;
 
     const startGame = () => {
         dispatch({ type: 'START_GAME', payload: { playerCount: 6 } });

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Connector, useAccount, useConnect, useDisconnect, useSignMessage } from "wagmi";
+import { Connector, useConnect, useDisconnect, useSignMessage } from "wagmi";
 import useAuthStore from "../store/authStore";
 import { GET_STRING, VERIFY_CHALLENGE } from "../../graphql/auth_queries";
 import { useMutation } from "@apollo/client";

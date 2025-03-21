@@ -6,7 +6,7 @@ import BoardMessage from "../components/BoardMessage"
 import { useGame } from "../contexts/GameContext"
 
 const Dashboard = () => {
-    const { state, dispatch } = useGame();
+    const {  dispatch } = useGame();
 
     // Reset game when component unmounts or when user navigates away
     useEffect(() => {

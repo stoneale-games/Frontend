@@ -1,5 +1,4 @@
 // src/components/BoardInfo.tsx
-import React from "react";
 import plug from "../assets/plug.png";
 import { useGame } from "../contexts/GameContext";
 import ErrorBoundary from "./ErrorBoundary";

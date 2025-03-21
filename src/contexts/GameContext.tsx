@@ -1,5 +1,5 @@
 // src/contexts/GameContext.tsx
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import React, { createContext, useContext, useReducer } from 'react';
 import { buildDeck } from '../utils/web3/buildDeck';
 
 type PlayerType = {

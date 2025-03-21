@@ -1,16 +1,15 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import board from "../assets/board.png";
 import card from "../assets/card.png";
 import { useGame } from "../contexts/GameContext";
 import ErrorBoundary from "./ErrorBoundary";
 // Import web3 related utilities (to be implemented later)
-import { buildDeck } from "../utils/web3/buildDeck";
 
 const Board = () => {
     const { state } = useGame();
     const { communityCards, isGameStarted, phase, tableId } = state;
-    const [isConnected, setIsConnected] = useState(true);
-    const [txPending, setTxPending] = useState(false);
+    const [isConnected] = useState(true);
+    const [txPending] = useState(false);
     
     // // This would check if user's wallet is connected
     // useEffect(() => {
@@ -117,15 +116,17 @@ const PlayerPositions = () => {
     // Function to verify if a card has been cryptographically signed
     // This would be used in a real implementation to verify fairness
     const isVerifiedCard = (card: any) => {
+        console.log(card);
+        
         // In the future, this would check blockchain signatures
         return true;
     };
     
     return (
         <>
-            {players.map((player, index) => {
+            {players.map((player) => {
                 const isCurrentPlayer = player.address === currentPlayerAddress;
-                const isBetting = player.isTurn && player.betTxHash;
+                // const isBetting = player.isTurn && player.betTxHash;
                 const playerPosition = positions[player.position];
                 
                 return (
