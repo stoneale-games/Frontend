@@ -12,6 +12,7 @@ import { config } from "../config.ts";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ApolloProviderWrapper from "./providers/ApolloWrapper.tsx";
 import ErrorBoundary from "./components/ErrorBoundary.tsx";
+import { ToastContainer } from 'react-toastify';
 
 const queryClient = new QueryClient();
 const router = createBrowserRouter([
@@ -62,6 +63,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <QueryClientProvider client={queryClient}>
           <ApolloProviderWrapper>
             <ThemeProvider>
+            <ToastContainer />
               <RouterProvider router={router} />
             </ThemeProvider>
           </ApolloProviderWrapper>

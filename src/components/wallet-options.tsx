@@ -1,89 +1,78 @@
 import * as React from "react";
-import { Connector, useConnect, useSignMessage } from "wagmi";
+import { Connector, useAccount, useConnect, useDisconnect, useSignMessage } from "wagmi";
 import useAuthStore from "../store/authStore";
 import { GET_STRING, VERIFY_CHALLENGE } from "../../graphql/auth_queries";
 import { useMutation } from "@apollo/client";
+import { toast } from "react-toastify";
 
 export function WalletOptions({ onClose }: { onClose: () => void }) {
   const { connectors, connect } = useConnect();
+ const [address,setAddress] = React.useState<`0x${string}`>();
+  const {disconnect} = useDisconnect();
   const setToken = useAuthStore((state: any) => state.setToken);
-  const [address, setAddress] = React.useState<string | null>(null);
-  // const [open, setOpen] = React.useState(false);
-  const [signData, setSignData] = React.useState<null | {
-    nonce: string;
-    isNewUser: boolean;
-  }>(null);
-
   const { signMessageAsync } = useSignMessage();
 
+  // Mutation to get the nonce from the server
   const [getString] = useMutation(GET_STRING, {
     onCompleted: async (data) => {
-      console.log(data, "g");
-      if (data?.requestChallenge?.nonce) {
-        console.log(data, "g3");
-        setSignData({
-          nonce: data.requestChallenge.nonce,
-          isNewUser: data.requestChallenge.isNewUser,
+      if (!address) {
+        toast.error("No connected address found.");
+        console.error("No connected address found.");
+        return;
+      }
+
+      console.log("Nonce received:", data?.requestChallenge?.nonce);
+      console.log("Signing address:", address);
+
+      try {
+        const signature = await signMessageAsync({
+          message: data.requestChallenge.nonce as string,
+          account: address, // Ensure correct address is used
         });
 
-        handleConfirm({
-          nonce: data.requestChallenge.nonce,
-          isNewUser: data.requestChallenge.isNewUser,
+        verifyChallenge({
+          variables: {
+            address, // Pass the exact connected address
+            signature,
+            nonce: data.requestChallenge.nonce,
+            isNewUser: data.requestChallenge.isNewUser,
+          },
         });
+        toast.success("Message signed successfully");
+      } catch (error) {
+        disconnect();
+        toast.error("Error signing message");
+        console.error("Error signing message:", error);
       }
+    },
+    onError: (error) => {
+      disconnect();
+      toast.error("Error requesting challenge ");
+      console.error("GraphQL Error:", error);
     },
   });
 
-  // useEffectWithoutMount(() => {
-  //   if (isConnected && address) {
-  //     getString({ variables: { address } });
-  //   }
-  // }, [isConnected, address]);
-
+  // Mutation to verify the signed message
   const [verifyChallenge] = useMutation(VERIFY_CHALLENGE, {
     onCompleted: (data) => {
-      console.log(data, "v");
-
       if (data?.verifyChallenge?.session?.token) {
         setToken(data.verifyChallenge.session.token);
       }
       onClose();
     },
+    onError: (error) => {
+
+      alert("Error verifying challenge string");
+      disconnect();
+      toast.error("Error verifying challenge string");  
+      console.error("GraphQL Error:", error);
+    },
   });
 
-  const handleConfirm = async ({
-    nonce,
-    isNewUser,
-  }: {
-    nonce: string;
-    isNewUser: boolean;
-  }) => {
-    if (signData && address) {
-      const signature = await signMessageAsync({
-        message: nonce as string,
-      });
-      verifyChallenge({
-        variables: {
-          address,
-          signature,
-          nonce,
-          isNewUser,
-        },
-      });
-    }
-  };
   return (
-    <div
-      className="flex flex-col gap-4 items-center w-[500px] rounded-lg bg-secondary-950"
-      style={{
-        padding: "20px",
-      }}
-    >
+    <div className="flex flex-col gap-4 items-center w-[500px] rounded-lg bg-secondary-950 p-5">
       <div className="flex items-center justify-end w-full">
-        <button
-          onClick={onClose}
-          className="border rounded-full py-1 text-xl px-3"
-        >
+        <button onClick={onClose} className="border rounded-full py-1 text-xl px-3">
           x
         </button>
       </div>
@@ -97,8 +86,17 @@ export function WalletOptions({ onClose }: { onClose: () => void }) {
               { connector },
               {
                 onSuccess: (data) => {
-                  setAddress(data.accounts[0] as string);
-                  getString({ variables: { address: data.accounts[0] } });
+                  console.log("Connected Wallet Address:", data.accounts[0]);
+                    setAddress(data.accounts[0]);
+                  if (data.accounts[0] ) {
+                    getString({ variables: { address: data.accounts[0] } });
+                  } else {
+          
+                    console.log("Stored address:", address);
+                    disconnect();
+                    setAddress(undefined);
+                    console.error("Wallet address mismatch detected.");
+                  }
                 },
               }
             )
@@ -126,11 +124,7 @@ function WalletOption({
   }, [connector]);
 
   return (
-    <button
-      className="px-6 py-5 rounded-lg w-fit border "
-      disabled={!ready}
-      onClick={onClick}
-    >
+    <button className="px-6 py-5 rounded-lg w-fit border " disabled={!ready} onClick={onClick}>
       {connector.name}
     </button>
   );
