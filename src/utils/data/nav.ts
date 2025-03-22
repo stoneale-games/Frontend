@@ -29,18 +29,18 @@ export const navs = [
 export const dashboardNav = [
   {
     title: "Create Game",
-    action: () => {},
+    to: "/dashboard",  // Path for React Router
   },
   {
     title: "Seat & Go",
-    action: () => {},
+    to: "/dashboard",
   },
   {
     title: "Weekly Game",
-    action: () => {},
+    to: "/dashboard",
   },
   {
     title: "Tournament",
-    action: () => {},
+    to: "/dashboard",
   },
 ];
