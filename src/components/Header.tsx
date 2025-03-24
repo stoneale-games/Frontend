@@ -13,6 +13,7 @@ import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import ThemeToggle from "./ThemeToggle";
 
 import Web3Auth from "./auth/Web3-auth";
+import Logo from "./Logo";
 
 const Header = ({ isConnected }: { isConnected: boolean }) => {
   return isConnected ? <IsConnectedHeader /> : <NotConnectedHeader />;
@@ -25,7 +26,7 @@ const IsConnectedHeader = () => {
   return (
     <header className="bg-primary-blue-300 h-14 w-full flex items-center justify-between px-12">
       <NavLink to="/">
-        <img src={logo} alt="crypto poker" className="h-10" />
+   <Logo/>
       </NavLink>
       <div className="flex items-center gap-6">
         <MessageNav />

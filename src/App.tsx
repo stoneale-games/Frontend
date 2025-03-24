@@ -13,7 +13,7 @@ import useAuthStore from "./store/authStore";
 function App() {
   //const { isConnected } = useAccount();
   const token = useAuthStore((state: any) => state.token);
-  const isConnected = !!token;
+  const isConnected = !token;
   const location = useLocation();
   const { isDarkMode } = useTheme();
   return (

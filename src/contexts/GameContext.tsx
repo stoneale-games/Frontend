@@ -1,39 +1,78 @@
 // src/contexts/GameContext.tsx
-import React, { createContext, useContext, useReducer } from 'react';
-import { buildDeck } from '../utils/web3/buildDeck';
+import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import { generateDeckOfCards, shuffle, dealFlop, dealTurn, dealRiver, showDown, dealPrivateCards } from '../utils/cards';
+import { handleBet, handleFold, determineMinBet, determineBlindIndices, anteUpBlinds } from '../utils/bet';
+import { handleOverflowIndex, determineNextActivePlayer, generateTable } from '../utils/players';
+import { handleAI } from '../utils/ai';
 
-type PlayerType = {
+// Types for our game context
+export type CardType = {
+  cardFace: string;
+  suit: string;
+  value: number;
+  ipfs_cid?: string; // Added for UI display compatibility
+  display?: string;   // Added for UI display compatibility
+  animationDelay?: number;
+};
+
+export type PlayerType = {
   id: string;
   name: string;
   chips: number;
-  cards: any[];
-  isActive: boolean;
+  roundStartChips?: number;
+  roundEndChips?: number;
+  currentRoundChipsInvested?: number;
+  bet: number;
+  sidePotStack?: number;
+  betReconciled?: boolean;
+  cards: CardType[];
+  showDownHand?: any;
+  folded: boolean;
+  allIn: boolean;
+  canRaise?: boolean;
   position: number;
   isTurn: boolean;
-  // Web3 additions
-  address?: string;         // Player's wallet address
-  isConnected: boolean;     // Is player currently connected
-  betTxHash?: string;       // Hash of their last bet transaction
-  lastAction?: string;      // Last action taken (fold, check, call, raise)
-  pendingAction?: boolean;  // Is there a pending transaction
+  isDealer?: boolean;
+  isSmallBlind?: boolean;
+  isBigBlind?: boolean;
+  lastAction?: string;
+  stackInvestment?: number;
 };
 
-type GameState = {
+export type SidePot = {
+  contestants: string[];
+  potValue: number;
+};
+
+export type GameState = {
   isGameStarted: boolean;
-  deck: any[];
+  deck: CardType[];
   players: PlayerType[];
-  communityCards: any[];
+  communityCards: CardType[];
   pot: number;
+  highBet: number;
   currentBet: number;
-  turn: number;
-  phase: 'idle' | 'preflop' | 'flop' | 'turn' | 'river' | 'showdown';
-  // Web3 additions
-  tableId?: string;          // Unique table ID on blockchain
-  handId?: string;           // Current hand ID
-  tokenSymbol?: string;      // Symbol for the token being used (MATIC, ETH, etc)
-  contractAddress?: string;  // Address of the poker game contract
-  currentPlayerAddress?: string; // Current user's wallet address
-  pendingTransactions: any[]; // List of pending txns
+  minBet: number;
+  minRaise: number;
+  betInputValue: number;
+  sidePots: SidePot[];
+  dealerIndex: number;
+  blindIndex: {
+    big: number;
+    small: number;
+  };
+  activePlayerIndex: number;
+  numPlayersAllIn: number;
+  numPlayersFolded: number;
+  numPlayersActive: number;
+  phase: 'idle' | 'betting1' | 'flop' | 'betting2' | 'turn' | 'betting3' | 'river' | 'betting4' | 'showdown';
+  tableId: string;
+  handId: string;
+  roundOver: boolean;
+  winners: PlayerType[];
+  handStrengths: Record<string, { rank: string; value: number[] }>;
+  showDownMessages?: any[];
+  playerHierarchy?: any[];
 };
 
 const initialState: GameState = {
@@ -42,10 +81,29 @@ const initialState: GameState = {
   players: [],
   communityCards: [],
   pot: 0,
+  highBet: 0,
   currentBet: 0,
-  turn: 0,
+  minBet: 20,
+  minRaise: 20,
+  betInputValue: 20,
+  sidePots: [],
+  dealerIndex: 0,
+  blindIndex: {
+    big: 0,
+    small: 0
+  },
+  activePlayerIndex: 0,
+  numPlayersAllIn: 0,
+  numPlayersFolded: 0,
+  numPlayersActive: 0,
   phase: 'idle',
-  pendingTransactions: [],
+  tableId: 'T' + Math.floor(Math.random() * 1000),
+  handId: 'H' + Math.floor(Math.random() * 10000),
+  roundOver: false,
+  winners: [],
+  handStrengths: {},
+  showDownMessages: [],
+  playerHierarchy: []
 };
 
 type GameAction =
@@ -54,105 +112,527 @@ type GameAction =
   | { type: 'DEAL_FLOP' }
   | { type: 'DEAL_TURN' }
   | { type: 'DEAL_RIVER' }
-  | { type: 'PLAYER_ACTION'; payload: { action: string; amount?: number } }
+  | { type: 'PLAYER_ACTION'; payload: { playerId: string; action: string; amount?: number } }
+  | { type: 'NEXT_PLAYER' }
+  | { type: 'EVALUATE_HANDS' }
+  | { type: 'END_ROUND' }
+  | { type: 'RESET_ROUND' }
   | { type: 'RESET_GAME' };
+
+// Add a function to generate mock IPFS CID for card images
+const generateMockIpfsCid = (card: CardType): string => {
+  const suitMap: Record<string, string> = {
+    'Heart': 'h',
+    'Spade': 's',
+    'Club': 'c',
+    'Diamond': 'd'
+  };
+  
+  const valueMap: Record<string, string> = {
+    '2': '2',
+    '3': '3',
+    '4': '4',
+    '5': '5',
+    '6': '6',
+    '7': '7',
+    '8': '8',
+    '9': '9',
+    '10': '10',
+    'J': 'j',
+    'Q': 'q',
+    'K': 'k',
+    'A': 'a'
+  };
+  
+  // In a real implementation, this would be an actual IPFS CID
+  // For now, we'll return a placeholder that represents the card
+  return `QmCard${valueMap[card.cardFace]}${suitMap[card.suit]}`;
+};
+
+// Function to push animation state messages to the UI
+const pushAnimationState = (state: GameState, playerIndex: number, message: string): GameState => {
+  // In a real implementation, this would update some UI state
+  // For now, just return the state unchanged
+  return state;
+};
 
 const gameReducer = (state: GameState, action: GameAction): GameState => {
   switch (action.type) {
-    case 'START_GAME':
-      const { playerCount } = action.payload;
-      const deck = buildDeck();
-      // Shuffle the deck
-      const shuffledDeck = [...deck].sort(() => Math.random() - 0.5);
+    case 'START_GAME': {
+      // Initialize a new game
+      const deck = shuffle(generateDeckOfCards());
       
       // Create players (6 by default)
-      const players = Array(playerCount || 6).fill(null).map((_, index) => ({
+      const numPlayers = action.payload.playerCount || 6;
+      const players: PlayerType[] = Array(numPlayers).fill(null).map((_, index) => ({
         id: `player-${index}`,
-        name: index === 0 ? 'You' : `Player ${index}`,
-        chips: 5000, // Starting chips
+        name: index === 0 ? 'You' : `AI Player ${index}`,
+        chips: 1000,
+        bet: 0,
+        betReconciled: false,
         cards: [],
-        isActive: true,
+        folded: false,
+        allIn: false,
         position: index,
-        isTurn: index === 0, // First player starts
-        isConnected: true, // Web3 addition
+        isTurn: false,
+        lastAction: ''
       }));
+      
+      // Set up dealer and blinds
+      const dealerIndex = 0;
+      const blindIndices = determineBlindIndices(dealerIndex, numPlayers);
+      
+      // Post blinds
+      const updatedPlayers = anteUpBlinds(players, blindIndices, state.minBet);
+      
+      // Mark player roles
+      players.forEach((player, index) => {
+        player.isDealer = index === dealerIndex;
+        player.isSmallBlind = index === blindIndices.smallBlindIndex;
+        player.isBigBlind = index === blindIndices.bigBlindIndex;
+        if (index === blindIndices.smallBlindIndex) player.lastAction = 'small blind';
+        if (index === blindIndices.bigBlindIndex) player.lastAction = 'big blind';
+      });
+      
+      // First player to act after blinds
+      const firstToAct = (blindIndices.bigBlindIndex + 1) % numPlayers;
+      players[firstToAct].isTurn = true;
       
       return {
         ...state,
         isGameStarted: true,
-        deck: shuffledDeck,
-        players,
-        phase: 'preflop',
+        deck,
+        players: updatedPlayers,
+        pot: state.minBet + (state.minBet / 2), // big blind + small blind
+        currentBet: state.minBet,
+        highBet: state.minBet,
+        activePlayerIndex: firstToAct,
+        dealerIndex,
+        blindIndex: {
+          big: blindIndices.bigBlindIndex,
+          small: blindIndices.smallBlindIndex
+        },
+        numPlayersActive: numPlayers,
+        phase: 'betting1',
+        roundOver: false,
+        winners: [],
+        handStrengths: {}
       };
+    }
 
-    case 'DEAL_CARDS':
+    case 'DEAL_CARDS': {
       // Deal 2 cards to each player
       const dealtCards = [...state.deck];
+      let cardIndex = 0;
+      
       const updatedPlayers = state.players.map(player => {
         // Take 2 cards from the deck for each player
-        const cards = [dealtCards.shift(), dealtCards.shift()];
-        return { ...player, cards };
+        const playerCards = [
+          { ...dealtCards[cardIndex++], ipfs_cid: generateMockIpfsCid(dealtCards[cardIndex-1]), display: `${dealtCards[cardIndex-1].cardFace} of ${dealtCards[cardIndex-1].suit}` },
+          { ...dealtCards[cardIndex++], ipfs_cid: generateMockIpfsCid(dealtCards[cardIndex-1]), display: `${dealtCards[cardIndex-1].cardFace} of ${dealtCards[cardIndex-1].suit}` }
+        ];
+        
+        return { ...player, cards: playerCards };
+      });
+      
+      // Remove the dealt cards from the deck
+      const remainingDeck = dealtCards.slice(cardIndex);
+      
+      return {
+        ...state,
+        deck: remainingDeck,
+        players: updatedPlayers
+      };
+    }
+
+    case 'DEAL_FLOP': {
+      // Burn a card and deal the flop (3 community cards)
+      const updatedDeck = [...state.deck];
+      let cardIndex = 1; // Skip the first card (burn card)
+      
+      const flopCards = [
+        { ...updatedDeck[cardIndex++], ipfs_cid: generateMockIpfsCid(updatedDeck[cardIndex-1]), display: `${updatedDeck[cardIndex-1].cardFace} of ${updatedDeck[cardIndex-1].suit}` },
+        { ...updatedDeck[cardIndex++], ipfs_cid: generateMockIpfsCid(updatedDeck[cardIndex-1]), display: `${updatedDeck[cardIndex-1].cardFace} of ${updatedDeck[cardIndex-1].suit}` },
+        { ...updatedDeck[cardIndex++], ipfs_cid: generateMockIpfsCid(updatedDeck[cardIndex-1]), display: `${updatedDeck[cardIndex-1].cardFace} of ${updatedDeck[cardIndex-1].suit}` }
+      ];
+      
+      // Reset betting for the new round
+      const updatedPlayers = state.players.map(player => ({
+        ...player,
+        currentBet: 0,
+        lastAction: '',
+        isTurn: player.position === state.blindIndex.small && !player.folded && player.chips > 0
+      }));
+      
+      // Find first active player after dealer
+      let firstToAct = state.dealerIndex;
+      do {
+        firstToAct = (firstToAct + 1) % state.players.length;
+      } while (state.players[firstToAct].folded || state.players[firstToAct].allIn);
+      
+      const finalUpdatedPlayers = updatedPlayers.map((p, i) => ({
+        ...p,
+        isTurn: i === firstToAct && !p.folded && !p.allIn
+      }));
+      
+      return {
+        ...state,
+        deck: updatedDeck.slice(cardIndex),
+        communityCards: flopCards,
+        phase: 'betting2',
+        players: finalUpdatedPlayers,
+        currentBet: 0,
+        highBet: 0,
+        activePlayerIndex: firstToAct
+      };
+    }
+
+    case 'DEAL_TURN': {
+      // Burn a card and deal the turn
+      const updatedDeck = [...state.deck];
+      let cardIndex = 1; // Skip the first card (burn card)
+      
+      const turnCard = {
+        ...updatedDeck[cardIndex],
+        ipfs_cid: generateMockIpfsCid(updatedDeck[cardIndex]),
+        display: `${updatedDeck[cardIndex].cardFace} of ${updatedDeck[cardIndex].suit}`
+      };
+      
+      // Reset betting for the new round
+      const updatedPlayers = state.players.map(player => ({
+        ...player,
+        currentBet: 0,
+        lastAction: '',
+        isTurn: false
+      }));
+      
+      // Find first active player after dealer
+      let firstToAct = state.dealerIndex;
+      do {
+        firstToAct = (firstToAct + 1) % state.players.length;
+      } while (state.players[firstToAct].folded || state.players[firstToAct].allIn);
+      
+      const finalUpdatedPlayers = updatedPlayers.map((p, i) => ({
+        ...p,
+        isTurn: i === firstToAct && !p.folded && !p.allIn
+      }));
+      
+      return {
+        ...state,
+        deck: updatedDeck.slice(cardIndex + 1),
+        communityCards: [...state.communityCards, turnCard],
+        phase: 'betting3',
+        players: finalUpdatedPlayers,
+        currentBet: 0,
+        highBet: 0,
+        activePlayerIndex: firstToAct
+      };
+    }
+
+    case 'DEAL_RIVER': {
+      // Burn a card and deal the river
+      const updatedDeck = [...state.deck];
+      let cardIndex = 1; // Skip the first card (burn card)
+      
+      const riverCard = {
+        ...updatedDeck[cardIndex],
+        ipfs_cid: generateMockIpfsCid(updatedDeck[cardIndex]),
+        display: `${updatedDeck[cardIndex].cardFace} of ${updatedDeck[cardIndex].suit}`
+      };
+      
+      // Reset betting for the new round
+      const updatedPlayers = state.players.map(player => ({
+        ...player,
+        currentBet: 0,
+        lastAction: '',
+        isTurn: false
+      }));
+      
+      // Find first active player after dealer
+      let firstToAct = state.dealerIndex;
+      do {
+        firstToAct = (firstToAct + 1) % state.players.length;
+      } while (state.players[firstToAct].folded || state.players[firstToAct].allIn);
+      
+      const finalUpdatedPlayers = updatedPlayers.map((p, i) => ({
+        ...p,
+        isTurn: i === firstToAct && !p.folded && !p.allIn
+      }));
+      
+      return {
+        ...state,
+        deck: updatedDeck.slice(cardIndex + 1),
+        communityCards: [...state.communityCards, riverCard],
+        phase: 'betting4',
+        players: finalUpdatedPlayers,
+        currentBet: 0,
+        highBet: 0,
+        activePlayerIndex: firstToAct
+      };
+    }
+
+    case 'PLAYER_ACTION': {
+      const { playerId, action, amount = 0 } = action.payload;
+      const playerIndex = state.players.findIndex(p => p.id === playerId);
+      
+      if (playerIndex === -1) return state;
+      
+      const player = state.players[playerIndex];
+      let updatedPlayers = [...state.players];
+      let newPot = state.pot;
+      let newCurrentBet = state.currentBet;
+      let newHighBet = state.highBet;
+      
+      // Handle different player actions
+      switch (action) {
+        case 'fold':
+          updatedPlayers[playerIndex] = {
+            ...player,
+            folded: true,
+            isTurn: false,
+            lastAction: 'fold'
+          };
+          break;
+          
+        case 'check':
+          updatedPlayers[playerIndex] = {
+            ...player,
+            lastAction: 'check',
+            isTurn: false
+          };
+          break;
+          
+        case 'call':
+          const callAmount = Math.min(player.chips, state.currentBet - player.bet);
+          updatedPlayers[playerIndex] = {
+            ...player,
+            chips: player.chips - callAmount,
+            bet: player.bet + callAmount,
+            lastAction: 'call',
+            isTurn: false,
+            allIn: (player.chips - callAmount) === 0
+          };
+          newPot += callAmount;
+          break;
+          
+        case 'raise':
+          const raiseAmount = Math.min(player.chips, amount);
+          if (raiseAmount > 0) {
+            updatedPlayers[playerIndex] = {
+              ...player,
+              chips: player.chips - raiseAmount,
+              bet: player.bet + raiseAmount,
+              lastAction: 'raise',
+              isTurn: false,
+              allIn: (player.chips - raiseAmount) === 0
+            };
+            newPot += raiseAmount;
+            newCurrentBet = player.bet + raiseAmount;
+            newHighBet = Math.max(newHighBet, newCurrentBet);
+            
+            // Reset other players' isTurn since someone raised
+            updatedPlayers = updatedPlayers.map((p, i) => {
+              if (i !== playerIndex && !p.folded && !p.allIn) {
+                return {
+                  ...p,
+                  isTurn: false
+                };
+              }
+              return p;
+            });
+          }
+          break;
+      }
+      
+      // Find next player's turn
+      let nextPlayerIndex = (playerIndex + 1) % state.players.length;
+      while (
+        nextPlayerIndex !== playerIndex && 
+        (updatedPlayers[nextPlayerIndex].folded || 
+         updatedPlayers[nextPlayerIndex].allIn ||
+         updatedPlayers[nextPlayerIndex].lastAction !== '')
+      ) {
+        nextPlayerIndex = (nextPlayerIndex + 1) % state.players.length;
+      }
+      
+      // If we've gone all the way around, no active players left
+      if (nextPlayerIndex === playerIndex || allPlayersActed(updatedPlayers)) {
+        // Move to next phase
+        return {
+          ...state,
+          players: updatedPlayers,
+          pot: newPot,
+          currentBet: newCurrentBet,
+          highBet: newHighBet,
+          activePlayerIndex: 0 // Will be updated in next phase
+        };
+      }
+      
+      // Set next player's turn
+      updatedPlayers[nextPlayerIndex].isTurn = true;
+      
+      return {
+        ...state,
+        players: updatedPlayers,
+        pot: newPot,
+        currentBet: newCurrentBet,
+        highBet: newHighBet,
+        activePlayerIndex: nextPlayerIndex
+      };
+    }
+
+    case 'NEXT_PLAYER': {
+      // Find the next active player
+      let nextPlayerIndex = (state.activePlayerIndex + 1) % state.players.length;
+      let foundNextPlayer = false;
+      
+      const updatedPlayers = state.players.map((player, index) => ({
+        ...player,
+        isTurn: false
+      }));
+      
+      // Find the next player who can act
+      while (!foundNextPlayer && nextPlayerIndex !== state.activePlayerIndex) {
+        if (!updatedPlayers[nextPlayerIndex].folded && !updatedPlayers[nextPlayerIndex].allIn) {
+          foundNextPlayer = true;
+          updatedPlayers[nextPlayerIndex].isTurn = true;
+        } else {
+          nextPlayerIndex = (nextPlayerIndex + 1) % state.players.length;
+        }
+      }
+      
+      // Check if the round of betting is complete
+      if (!foundNextPlayer || allPlayersBetEqual(updatedPlayers, state.currentBet)) {
+        // Move to next phase based on current phase
+        let nextPhase = state.phase;
+        switch (state.phase) {
+          case 'betting1': nextPhase = 'flop'; break;
+          case 'betting2': nextPhase = 'turn'; break;
+          case 'betting3': nextPhase = 'river'; break;
+          case 'betting4': nextPhase = 'showdown'; break;
+        }
+        
+        return {
+          ...state,
+          players: updatedPlayers,
+          phase: nextPhase,
+          activePlayerIndex: nextPlayerIndex
+        };
+      }
+      
+      return {
+        ...state,
+        players: updatedPlayers,
+        activePlayerIndex: nextPlayerIndex
+      };
+    }
+
+    case 'EVALUATE_HANDS': {
+      // In a real implementation, we'd evaluate poker hands here
+      // For now, just pick a random winner
+      const activePlayers = state.players.filter(p => !p.folded);
+      
+      // If only one player remains, they win
+      if (activePlayers.length === 1) {
+        return {
+          ...state,
+          phase: 'showdown',
+          roundOver: true,
+          winners: activePlayers
+        };
+      }
+      
+      // For demo purposes, pick the human player as winner
+      const winner = activePlayers.find(p => p.position === 0) || activePlayers[0];
+      
+      return {
+        ...state,
+        phase: 'showdown',
+        roundOver: true,
+        winners: [winner],
+        handStrengths: {
+          [winner.id]: { rank: 'Pair', value: [10, 10, 8, 5, 2] }
+        }
+      };
+    }
+
+    case 'END_ROUND': {
+      // Distribute the pot to the winners
+      const winners = state.winners;
+      const potPerWinner = Math.floor(state.pot / winners.length);
+      
+      const updatedPlayers = state.players.map(player => {
+        const isWinner = winners.some(w => w.id === player.id);
+        return {
+          ...player,
+          chips: isWinner ? player.chips + potPerWinner : player.chips,
+          lastAction: isWinner ? 'winner' : player.lastAction
+        };
       });
       
       return {
         ...state,
-        deck: dealtCards,
         players: updatedPlayers,
+        pot: 0,
+        roundOver: true
       };
+    }
 
-    case 'DEAL_FLOP':
-      // Deal flop (3 community cards)
-      const deckAfterFlop = [...state.deck];
-      // Burn a card
-      deckAfterFlop.shift();
-      // Deal 3 cards
-      const flopCards = [
-        deckAfterFlop.shift(),
-        deckAfterFlop.shift(),
-        deckAfterFlop.shift(),
-      ];
+    case 'RESET_ROUND': {
+      // Move the dealer button and reset for a new hand
+      const newDealerPosition = (state.dealerIndex + 1) % state.players.length;
+      const blindIndices = determineBlindIndices(newDealerPosition, state.players.length);
+      
+      // Reset player states for a new hand
+      let updatedPlayers = state.players.map((player, index) => ({
+        ...player,
+        cards: [],
+        bet: 0,
+        currentBet: 0,
+        lastAction: '',
+        folded: false,
+        allIn: false,
+        isDealer: index === newDealerPosition,
+        isSmallBlind: index === blindIndices.smallBlindIndex,
+        isBigBlind: index === blindIndices.bigBlindIndex,
+        isTurn: false
+      }));
+      
+      // Post blinds
+      updatedPlayers = anteUpBlinds(updatedPlayers, blindIndices, state.minBet);
+      
+      // Set action to player after big blind
+      const firstToAct = (blindIndices.bigBlindIndex + 1) % state.players.length;
+      updatedPlayers[firstToAct].isTurn = true;
+      
+      // Set blind actions
+      updatedPlayers[blindIndices.smallBlindIndex].lastAction = 'small blind';
+      updatedPlayers[blindIndices.bigBlindIndex].lastAction = 'big blind';
       
       return {
         ...state,
-        deck: deckAfterFlop,
-        communityCards: flopCards,
-        phase: 'flop',
+        dealerIndex: newDealerPosition,
+        blindIndex: {
+          big: blindIndices.bigBlindIndex,
+          small: blindIndices.smallBlindIndex
+        },
+        deck: shuffle(generateDeckOfCards()),
+        communityCards: [],
+        players: updatedPlayers,
+        pot: state.minBet + (state.minBet / 2), // big blind + small blind
+        currentBet: state.minBet,
+        highBet: state.minBet,
+        phase: 'betting1',
+        handId: 'H' + Math.floor(Math.random() * 10000),
+        roundOver: false,
+        winners: [],
+        handStrengths: {},
+        activePlayerIndex: firstToAct,
+        numPlayersAllIn: 0,
+        numPlayersFolded: 0,
+        numPlayersActive: updatedPlayers.length
       };
-
-    case 'DEAL_TURN':
-      // Deal turn (4th community card)
-      const deckAfterTurn = [...state.deck];
-      // Burn a card
-      deckAfterTurn.shift();
-      // Deal 1 card
-      const turnCard = deckAfterTurn.shift();
-      
-      return {
-        ...state,
-        deck: deckAfterTurn,
-        communityCards: [...state.communityCards, turnCard],
-        phase: 'turn',
-      };
-
-    case 'DEAL_RIVER':
-      // Deal river (5th community card)
-      const deckAfterRiver = [...state.deck];
-      // Burn a card
-      deckAfterRiver.shift();
-      // Deal 1 card
-      const riverCard = deckAfterRiver.shift();
-      
-      return {
-        ...state,
-        deck: deckAfterRiver,
-        communityCards: [...state.communityCards, riverCard],
-        phase: 'river',
-      };
-
-    case 'PLAYER_ACTION':
-      // Handle player actions (fold, check, call, raise)
-      // This would be more complex in a real implementation
-      return state;
+    }
 
     case 'RESET_GAME':
       return initialState;
@@ -160,6 +640,23 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
     default:
       return state;
   }
+};
+
+// Helper functions
+const allPlayersActed = (players: PlayerType[]): boolean => {
+  return players.every(player => 
+    player.folded || 
+    player.allIn || 
+    player.lastAction !== ''
+  );
+};
+
+const allPlayersBetEqual = (players: PlayerType[], currentBet: number): boolean => {
+  return players.every(player => 
+    player.folded || 
+    player.allIn || 
+    player.bet === currentBet
+  );
 };
 
 const GameContext = createContext<{
