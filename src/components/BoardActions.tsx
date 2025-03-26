@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useGame } from "../contexts/GameContext";
 import ErrorBoundary from "./ErrorBoundary";
 
+
 const BoardActions = () => {
     const [betValue, setBetValue] = useState(20);
     const { state, dispatch } = useGame();
@@ -281,7 +282,7 @@ const BoardActions = () => {
 };
 
 // Simple AI decision making function
-function determineAIAction(player, currentBet, gameState) {
+function determineAIAction(player:any, currentBet:number, gameState:any) {
     const randomStrategy = Math.random();
     const playerBet = player.bet || 0;
     const callAmount = currentBet - playerBet;

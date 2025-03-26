@@ -9,36 +9,62 @@ export type TDisplays = {
 
 export interface Card {
   id?: number;
-  display: string;
+  display?: string;
   value: number;
   suit: string;
   solo?: string;
   ipfs_cid?: string;
   cardFace: string;
+  animationDelay?: number;
 
 }
-// export interface Card {
 
-// }
+
+export interface ShowDownHand {
+  hand: Card[];
+  descendingSortHand: Card[];
+  bestHandRank?: string;
+  bestHand?: Card[];
+  bools?: {
+    isRoyalFlush: boolean;
+    isStraightFlush: boolean;
+    isFourOfAKind: boolean;
+    isFullHouse: boolean;
+    isFlush: boolean;
+    isStraight: boolean;
+    isThreeOfAKind: boolean;
+    isTwoPair: boolean;
+    isPair: boolean;
+    isNoPair: boolean;
+  };
+  heldRankHierarchy?: Array<{
+    name: string;
+    match: boolean;
+  }>;
+}
 
 export interface Player {
+  id: string;
   name: string;
-  
-  // Chips and betting properties
+  avatarURL: string;
+  cards: Card[];
+  showDownHand: ShowDownHand;
   chips: number;
+  roundStartChips: number;
+  roundEndChips: number;
+  currentRoundChipsInvested: number;
   bet: number;
   betReconciled: boolean;
-  currentRoundChipsInvested: number;
-  stackInvestment?: number;
-  sidePotStack: number;
-  
-  // Player status
   folded: boolean;
   allIn: boolean;
-  canRaise?: boolean;
-  
-  // Player cards
-  cards: Card[];
+  canRaise: boolean;
+  stackInvestment: number;
+  robot: boolean;
+  sidePotStack?: number;
+  frequencyHistogram?: Record<string, number>;
+  suitHistogram?: Record<string, number>;
+  metaData?: any;
+  currentBet?: number;
 }
 
 export interface SidePot {
@@ -47,37 +73,59 @@ export interface SidePot {
 }
 
 export interface GameState {
-  // Players
   players: Player[];
+  communityCards: Card[];
+  deck: Card[];
+  phase: string;
   activePlayerIndex: number;
-  numPlayersAllIn: number;
-  numPlayersFolded: number;
-  numPlayersActive: number;
-  
-  // Betting
-  pot: number;
+  dealerIndex: number;
+  blindIndex: {
+    big: number;
+    small: number;
+  };
   highBet: number;
   minBet: number;
   betInputValue: number;
+  pot: number;
   sidePots: SidePot[];
-  
-  // Game progression
-  phase: 'betting1' | 'betting2' | 'betting3' | 'betting4' | 'flop' | 'turn' | 'river' | 'showdown';
-  communityCards: Card[];
+  numPlayersAllIn: number;
+  numPlayersFolded: number;
+  numPlayersActive: number;
+  playerHierarchy?: any[];
+  showDownMessages?: Array<{
+    users: string[];
+    prize: number;
+    rank: string;
+  }>;
+  clearCards?: boolean;
 }
 
-export interface Histogram {
-  frequencyHistogram: Record<string, number>;
-  suitHistogram: Record<string, number>;
-}
+export type Phase = 
+  | 'loading' 
+  | 'initialDeal' 
+  | 'betting1' 
+  | 'flop' 
+  | 'betting2' 
+  | 'turn' 
+  | 'betting3' 
+  | 'river' 
+  | 'betting4' 
+  | 'showdown';
 
-export interface FrequencyHistogramMetaData {
-  [key: string]: any;
-}
+export type Suit = 'Heart' | 'Diamond' | 'Spade' | 'Club';
 
 export interface BlindIndices {
   bigBlindIndex: number;
   smallBlindIndex: number;
 }
 
-export type PushAnimationStateFn = (playerIndex: number, message: string) => void;
+export interface FrequencyHistogramMetaData {
+  pairs: Array<{ face: string; value: number }>;
+  tripples: Array<{ face: string; value: number }>;
+  quads: Array<{ face: string; value: number }>;
+}
+
+export interface PopCardsResult {
+  mutableDeckCopy: Card[];
+  chosenCards: Card | Card[];
+}

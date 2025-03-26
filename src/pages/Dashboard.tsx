@@ -1,5 +1,5 @@
 // src/pages/Dashboard.tsx
-import React, { useEffect } from "react";
+import  { useEffect } from "react";
 import Board from "../components/Board";
 import BoardActions from "../components/BoardActions";
 import BoardInfo from "../components/BoardInfo";

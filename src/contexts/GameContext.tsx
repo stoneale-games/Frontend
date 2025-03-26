@@ -1,9 +1,10 @@
 // src/contexts/GameContext.tsx
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
-import { generateDeckOfCards, shuffle, dealFlop, dealTurn, dealRiver, showDown, dealPrivateCards } from '../utils/cards';
-import { handleBet, handleFold, determineMinBet, determineBlindIndices, anteUpBlinds } from '../utils/bet';
-import { handleOverflowIndex, determineNextActivePlayer, generateTable } from '../utils/players';
-import { handleAI } from '../utils/ai';
+import React, { createContext, useContext, useReducer } from 'react';
+import { generateDeckOfCards, shuffle} from '../utils/cards';
+import {  determineBlindIndices, anteUpBlinds } from '../utils/bet';
+// import { handleOverflowIndex, determineNextActivePlayer, generateTable } from '../utils/players';
+// import { handleAI } from '../utils/ai';
+import { Card, Player } from '../utils/types';
 
 // Types for our game context
 export type CardType = {
@@ -23,6 +24,7 @@ export type PlayerType = {
   roundEndChips?: number;
   currentRoundChipsInvested?: number;
   bet: number;
+  currentBet: number;
   sidePotStack?: number;
   betReconciled?: boolean;
   cards: CardType[];
@@ -37,6 +39,8 @@ export type PlayerType = {
   isBigBlind?: boolean;
   lastAction?: string;
   stackInvestment?: number;
+  avatarURL?: string;
+  robot?: boolean;
 };
 
 export type SidePot = {
@@ -46,9 +50,9 @@ export type SidePot = {
 
 export type GameState = {
   isGameStarted: boolean;
-  deck: CardType[];
+  deck: Card[];
   players: PlayerType[];
-  communityCards: CardType[];
+  communityCards: Card[];
   pot: number;
   highBet: number;
   currentBet: number;
@@ -150,11 +154,11 @@ const generateMockIpfsCid = (card: CardType): string => {
 };
 
 // Function to push animation state messages to the UI
-const pushAnimationState = (state: GameState, playerIndex: number, message: string): GameState => {
-  // In a real implementation, this would update some UI state
-  // For now, just return the state unchanged
-  return state;
-};
+// const pushAnimationState = (state: GameState, playerIndex: number, message: string): GameState => {
+//   // In a real implementation, this would update some UI state
+//   // For now, just return the state unchanged
+//   return state;
+// };
 
 const gameReducer = (state: GameState, action: GameAction): GameState => {
   switch (action.type) {
@@ -169,6 +173,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
         name: index === 0 ? 'You' : `AI Player ${index}`,
         chips: 1000,
         bet: 0,
+        currentBet: 0,
         betReconciled: false,
         cards: [],
         folded: false,
@@ -183,7 +188,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
       const blindIndices = determineBlindIndices(dealerIndex, numPlayers);
       
       // Post blinds
-      const updatedPlayers = anteUpBlinds(players, blindIndices, state.minBet);
+      const updatedPlayers = anteUpBlinds(players as unknown as Player[], blindIndices, state.minBet) as unknown as PlayerType[];
       
       // Mark player roles
       players.forEach((player, index) => {
@@ -372,7 +377,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
     }
 
     case 'PLAYER_ACTION': {
-      const { playerId, action, amount = 0 } = action.payload;
+      const { playerId, action: actionType, amount = 0 } = action.payload;
       const playerIndex = state.players.findIndex(p => p.id === playerId);
       
       if (playerIndex === -1) return state;
@@ -384,7 +389,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
       let newHighBet = state.highBet;
       
       // Handle different player actions
-      switch (action) {
+      switch (actionType) {
         case 'fold':
           updatedPlayers[playerIndex] = {
             ...player,
@@ -486,7 +491,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
       let nextPlayerIndex = (state.activePlayerIndex + 1) % state.players.length;
       let foundNextPlayer = false;
       
-      const updatedPlayers = state.players.map((player, index) => ({
+      const updatedPlayers = state.players.map((player, _) => ({
         ...player,
         isTurn: false
       }));
@@ -599,7 +604,20 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
       }));
       
       // Post blinds
-      updatedPlayers = anteUpBlinds(updatedPlayers, blindIndices, state.minBet);
+      const playersForBlinds = updatedPlayers.map(player => ({
+        ...player,
+        cards: [] as Card[]  // This ensures compatibility with Player type
+      }));
+      
+      const playersWithBlinds = anteUpBlinds(playersForBlinds as unknown as Player[], blindIndices, state.minBet);
+      
+      // Merge the blind changes back to our players
+      updatedPlayers = updatedPlayers.map((player, idx) => ({
+        ...player,
+        chips: playersWithBlinds[idx].chips,
+        bet: playersWithBlinds[idx].bet,
+        currentBet: playersWithBlinds[idx].currentBet || 0
+      }));
       
       // Set action to player after big blind
       const firstToAct = (blindIndices.bigBlindIndex + 1) % state.players.length;

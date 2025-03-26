@@ -1,5 +1,4 @@
 // src/components/Board.tsx
-import React from "react";
 import board from "../assets/board.png";
 import card from "../assets/card.png";
 import { useGame } from "../contexts/GameContext";
@@ -7,7 +6,7 @@ import ErrorBoundary from "./ErrorBoundary";
 
 const Board = () => {
     const { state } = useGame();
-    const { communityCards, isGameStarted, phase, tableId } = state;
+    const { communityCards, isGameStarted, phase} = state;
     
     return (
         <ErrorBoundary>
@@ -15,16 +14,19 @@ const Board = () => {
                 <div className="h-72 w-[560px] relative">
                     <img src={board} className="absolute w-[70vw] h-[70vh]" alt="Poker board" />
                   
-                    {/* Table ID */}
+                    {/* Table ID
                     {isGameStarted && (
                         <div className="absolute top-2 left-1/2 transform -translate-x-1/2 bg-primary-blue-300 text-white-950 text-xs px-2 py-1 rounded-md">
                             Table #{tableId}
                         </div>
-                    )}
+                    )} */}
                     
                     {/* Community cards */}
                     {isGameStarted && (
-                        <ul className="flex gap-2 w-fit absolute top-[50%] left-[37%]">
+                        <ul className="flex gap-2 w-fit absolute top-[50%] left-[37%]" style={{ 
+                            transform: 'translateY(-50%)',    
+                            top: "50%",
+                            left: "37%" }}>
                             {Array(5).fill(null).map((_, index) => (
                                 <li key={index}>
                                     <div className="ring-1 bg-transparent flex items-center justify-center ring-secondary-950 w-10 h-14 rounded-sm">
@@ -56,7 +58,7 @@ const Board = () => {
 };
 
 // Helper to determine how many cards should be visible
-function getVisibleCardCount(phase) {
+function getVisibleCardCount(phase:string) {
     switch (phase) {
         case 'flop':
         case 'betting2': return 3;
@@ -70,7 +72,7 @@ function getVisibleCardCount(phase) {
 }
 
 // Get suit symbol
-function getSuitSymbol(suit) {
+function getSuitSymbol(suit:string) {
     switch (suit) {
         case 'Heart': return '♥';
         case 'Spade': return '♠';

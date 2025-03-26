@@ -41,7 +41,7 @@ const BoardInfo = () => {
     };
     
     // Helper to convert card values to names
-    const getCardValueName = (cardFace) => {
+    const getCardValueName = (cardFace: string) => {
         return cardFace;
     };
     
@@ -107,7 +107,7 @@ const BoardInfo = () => {
 };
 
 // Convert internal phase names to display names
-function getPhaseDisplay(phase) {
+function getPhaseDisplay(phase:string) {
     switch (phase) {
         case 'betting1': return 'Pre-Flop';
         case 'betting2': return 'Flop';
@@ -119,19 +119,19 @@ function getPhaseDisplay(phase) {
 }
 
 // Simple hand evaluation - placeholder only
-function evaluateSimpleHand(cards) {
+function evaluateSimpleHand(cards: {cardFace: string, suit: string}[]) {
     // Count cards of each value
-    const valueCounts = {};
+    const valueCounts: Record<string, number> = {};
     for (const card of cards) {
         valueCounts[card.cardFace] = (valueCounts[card.cardFace] || 0) + 1;
     }
     
     // Count cards of each suit
-    const suitCounts = {};
+    const suitCounts: Record<string, number> = {};
     for (const card of cards) {
         suitCounts[card.suit] = (suitCounts[card.suit] || 0) + 1;
     }
-    
+
     // Check for pairs, three of a kind, etc.
     const pairCount = Object.values(valueCounts).filter(count => count === 2).length;
     const hasThreeOfAKind = Object.values(valueCounts).some(count => count === 3);

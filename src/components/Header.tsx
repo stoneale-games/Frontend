@@ -1,4 +1,3 @@
-import logo from "../assets/logo.png";
 import cart from "../assets/cart.png";
 import Brightness4OutlinedIcon from "@mui/icons-material/Brightness4Outlined";
 import { NavLink, useLocation } from "react-router-dom";
