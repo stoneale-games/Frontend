@@ -262,13 +262,12 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
       ];
       
       // Reset betting for the new round
-      const updatedPlayers = state.players.map(player => ({
-        ...player,
-        currentBet: 0,
-        lastAction: '',
-        isTurn: player.position === state.blindIndex.small && !player.folded && player.chips > 0
-      }));
-      
+    const updatedPlayers = state.players.map(player => ({
+  ...player,
+  currentBet: 0,
+  lastAction: '', // Ensure this is always reset
+  isTurn: false
+}));
       // Find first active player after dealer
       let firstToAct = state.dealerIndex;
       do {
@@ -451,14 +450,13 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
       
       // Find next player's turn
       let nextPlayerIndex = (playerIndex + 1) % state.players.length;
-      while (
-        nextPlayerIndex !== playerIndex && 
-        (updatedPlayers[nextPlayerIndex].folded || 
-         updatedPlayers[nextPlayerIndex].allIn ||
-         updatedPlayers[nextPlayerIndex].lastAction !== '')
-      ) {
-        nextPlayerIndex = (nextPlayerIndex + 1) % state.players.length;
-      }
+while (
+  nextPlayerIndex !== playerIndex && 
+  (updatedPlayers[nextPlayerIndex].folded || 
+   updatedPlayers[nextPlayerIndex].allIn)
+) {
+  nextPlayerIndex = (nextPlayerIndex + 1) % state.players.length;
+}
       
       // If we've gone all the way around, no active players left
       if (nextPlayerIndex === playerIndex || allPlayersActed(updatedPlayers)) {
@@ -475,6 +473,8 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
       
       // Set next player's turn
       updatedPlayers[nextPlayerIndex].isTurn = true;
+      
+      console.log("Next player to act:", nextPlayerIndex, updatedPlayers[nextPlayerIndex]?.name);
       
       return {
         ...state,

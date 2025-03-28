@@ -200,7 +200,7 @@ const BoardActions = () => {
                             Pot: {pot}
                         </div>
                         {/* Only show betting controls when it's human's turn */}
-                        {humanPlayer && humanPlayer.isTurn && (
+                        {humanPlayer && humanPlayer.isTurn && !humanPlayer.folded && !humanPlayer.allIn && (
                             <>
                                 <div className="flex w-full gap-2 items-center p-2 ring-1 ring-primary-900 rounded-md">
                                     <div className="text-xs text-white-300">{minBetValue}</div>

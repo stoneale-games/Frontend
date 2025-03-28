@@ -4,6 +4,7 @@ import card from "../assets/card.png";
 import { useGame } from "../contexts/GameContext";
 import ErrorBoundary from "./ErrorBoundary";
 
+
 const Board = () => {
     const { state } = useGame();
     const { communityCards, isGameStarted, phase} = state;
@@ -106,9 +107,9 @@ const PlayerPositions = () => {
                 
                 return (
                     <div 
-                        key={player.id}
-                        className={`absolute ${player.isTurn ? 'ring-2 ring-secondary-950 bg-opacity-50 bg-primary-blue-950 rounded-md p-1' : ''} ${isWinner ? 'ring-2 ring-secondary-950' : ''}`}
-                        style={playerPosition}
+                    key={player.id}
+                    className={`absolute ${player.isTurn ? 'ring-2 ring-secondary-950 bg-opacity-70 bg-primary-blue-950 rounded-md p-2' : ''} ${isWinner ? 'ring-2 ring-secondary-950' : ''}`}
+                    style={playerPosition}
                     >
                         <div className="flex flex-col items-center">
                             {/* Player marker & name */}

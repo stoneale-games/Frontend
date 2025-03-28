@@ -73,6 +73,7 @@ export interface SidePot {
 }
 
 export interface GameState {
+  loading?: boolean;
   players: Player[];
   communityCards: Card[];
   deck: Card[];
@@ -98,6 +99,9 @@ export interface GameState {
     rank: string;
   }>;
   clearCards?: boolean;
+  playerAnimationSwitchboard?: Record<number, {isAnimating: boolean, content: string | null}>;
+  winnerFound?: any;
+  playActionMessages: any[];
 }
 
 export type Phase = 

@@ -8,7 +8,7 @@ export const generateTable = async (): Promise<Player[]> => {
   const users: Player[] = [{
     id: uuid(),
     name: 'Player 1',
-    avatarURL: '/assets/boy.svg',
+    avatarURL: '/player.ng',
     cards: [],
     showDownHand: {
       hand: [],

@@ -6,6 +6,7 @@ import BoardInfo from "../components/BoardInfo";
 import BoardMessage from "../components/BoardMessage";
 import ErrorBoundary from "../components/ErrorBoundary";
 import { useGame } from "../contexts/GameContext";
+import PokerApp from "../components/Poker-app";
 
 const Dashboard = () => {
     const { dispatch } = useGame();
@@ -16,7 +17,16 @@ const Dashboard = () => {
             dispatch({ type: 'RESET_GAME' });
         };
     }, [dispatch]);
+    const test = true;
 
+    if (test) {
+        return (
+            <section className="relative h-[calc(100vh-60px)]">
+            <PokerApp />
+            </section>
+        )
+    }
+    
     return (
         <ErrorBoundary>
             <section className="relative h-[calc(100vh-60px)]">
