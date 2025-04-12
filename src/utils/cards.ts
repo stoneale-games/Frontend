@@ -85,6 +85,7 @@ export const popShowdownCards = (deck: Card[], numToPop: number): PopCardsResult
 export const dealPrivateCards = (state: GameState): GameState => {
   state.clearCards = false;
   let animationDelay = 0;
+  console.log(state,"deal private cards");
   
   while (state.players[state.activePlayerIndex].cards.length < 2) {
     const { mutableDeckCopy, chosenCards } = popCards(state.deck, 1);

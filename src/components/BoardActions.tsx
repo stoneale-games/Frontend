@@ -9,11 +9,11 @@ import ErrorBoundary from "./ErrorBoundary";
 const BoardActions = () => {
     const [betValue, setBetValue] = useState(20);
     const { state, dispatch } = useGame();
-    const { 
-        isGameStarted, 
-        players, 
-        currentBet, 
-        phase, 
+    const {
+        isGameStarted,
+        players,
+        currentBet,
+        phase,
         activePlayerIndex,
         roundOver,
         pot,
@@ -23,23 +23,23 @@ const BoardActions = () => {
 
     // Find the human player (position 0)
     const humanPlayer = players.find(p => p.position === 0);
-    
+
     // Calculate minimum and maximum bet amounts
     const minBetValue = currentBet > 0 ? currentBet + minRaise : minBet;
     const maxBet = humanPlayer ? humanPlayer.chips : 100;
-    
+
     // Initialize bet slider when a new betting round starts
     useEffect(() => {
         if (humanPlayer) {
             setBetValue(Math.min(minBetValue, humanPlayer.chips));
         }
     }, [phase, humanPlayer, minBetValue]);
-    
+
     // Handle AI player turns
     useEffect(() => {
         // Only proceed if game is started and it's not over
         if (!isGameStarted || roundOver) return;
-        
+
         // Check if it's an AI player's turn
         const currentPlayer = players[activePlayerIndex];
         if (currentPlayer && currentPlayer.position !== 0 && currentPlayer.isTurn) {
@@ -47,7 +47,7 @@ const BoardActions = () => {
             const timer = setTimeout(() => {
                 // For AI decision, we'll use a simple strategy
                 const aiAction = determineAIAction(currentPlayer, currentBet, state);
-                
+
                 // Make the AI move
                 dispatch({
                     type: 'PLAYER_ACTION',
@@ -57,21 +57,21 @@ const BoardActions = () => {
                         amount: aiAction.amount
                     }
                 });
-                
+
                 // Move to next player
                 setTimeout(() => {
                     dispatch({ type: 'NEXT_PLAYER' });
                 }, 500);
             }, 1000 + Math.random() * 1000); // Random delay between 1-2 seconds
-            
+
             return () => clearTimeout(timer);
         }
     }, [state, dispatch, isGameStarted, players, activePlayerIndex, roundOver, currentBet]);
-    
+
     // Progress game phases automatically
     useEffect(() => {
         if (!isGameStarted || roundOver) return;
-        
+
         // Check if we need to deal community cards or evaluate hands
         if (players.every(p => !p.isTurn)) {
             const timer = setTimeout(() => {
@@ -100,7 +100,7 @@ const BoardActions = () => {
                         break;
                 }
             }, 1000);
-            
+
             return () => clearTimeout(timer);
         }
     }, [isGameStarted, phase, players, dispatch, roundOver]);
@@ -115,7 +115,7 @@ const BoardActions = () => {
 
     const handleFold = () => {
         if (!humanPlayer || !humanPlayer.isTurn) return;
-        
+
         dispatch({
             type: 'PLAYER_ACTION',
             payload: {
@@ -123,7 +123,7 @@ const BoardActions = () => {
                 action: 'fold'
             }
         });
-        
+
         setTimeout(() => {
             dispatch({ type: 'NEXT_PLAYER' });
         }, 500);
@@ -131,7 +131,7 @@ const BoardActions = () => {
 
     const handleCheck = () => {
         if (!humanPlayer || !humanPlayer.isTurn) return;
-        
+
         // Can only check if no bet to call or already matched the bet
         if (currentBet === 0 || humanPlayer.bet === currentBet) {
             dispatch({
@@ -141,7 +141,7 @@ const BoardActions = () => {
                     action: 'check'
                 }
             });
-            
+
             setTimeout(() => {
                 dispatch({ type: 'NEXT_PLAYER' });
             }, 500);
@@ -150,7 +150,7 @@ const BoardActions = () => {
 
     const handleCall = () => {
         if (!humanPlayer || !humanPlayer.isTurn) return;
-        
+
         dispatch({
             type: 'PLAYER_ACTION',
             payload: {
@@ -158,7 +158,7 @@ const BoardActions = () => {
                 action: 'call'
             }
         });
-        
+
         setTimeout(() => {
             dispatch({ type: 'NEXT_PLAYER' });
         }, 500);
@@ -166,7 +166,7 @@ const BoardActions = () => {
 
     const handleRaise = () => {
         if (!humanPlayer || !humanPlayer.isTurn) return;
-        
+
         dispatch({
             type: 'PLAYER_ACTION',
             payload: {
@@ -175,19 +175,19 @@ const BoardActions = () => {
                 amount: betValue
             }
         });
-        
+
         setTimeout(() => {
             dispatch({ type: 'NEXT_PLAYER' });
         }, 500);
     };
 
     // Determine if check is allowed
-    const canCheck = humanPlayer && humanPlayer.isTurn && 
-                     (currentBet === 0 || humanPlayer.bet === currentBet);
-    
+    const canCheck = humanPlayer && humanPlayer.isTurn &&
+        (currentBet === 0 || humanPlayer.bet === currentBet);
+
     // Determine if call is needed instead of check
     const needsToCall = currentBet > 0 && humanPlayer && humanPlayer.bet < currentBet;
-    
+
     // Calculate call amount
     const callAmount = needsToCall ? currentBet - (humanPlayer?.bet || 0) : 0;
 
@@ -225,7 +225,7 @@ const BoardActions = () => {
                                         <CancelOutlined className="!text-white-950" />
                                         <span className="text-xs text-white-950">Fold</span>
                                     </button>
-                                    
+
                                     {canCheck ? (
                                         <button
                                             onClick={handleCheck}
@@ -243,7 +243,7 @@ const BoardActions = () => {
                                             </span>
                                         </button>
                                     )}
-                                    
+
                                     <button
                                         onClick={handleRaise}
                                         disabled={humanPlayer.chips < minBetValue}
@@ -255,14 +255,14 @@ const BoardActions = () => {
                                 </div>
                             </>
                         )}
-                        
+
                         {/* When it's not human's turn, show current action */}
                         {isGameStarted && (!humanPlayer || !humanPlayer.isTurn) && (
                             <div className="text-center py-2 text-white-950">
-                                {roundOver 
-                                    ? "Round complete" 
-                                    : phase === 'showdown' 
-                                        ? "Evaluating hands..." 
+                                {roundOver
+                                    ? "Round complete"
+                                    : phase === 'showdown'
+                                        ? "Evaluating hands..."
                                         : `Waiting for ${players.find(p => p.isTurn)?.name || 'next player'} to act...`}
                             </div>
                         )}
@@ -282,11 +282,11 @@ const BoardActions = () => {
 };
 
 // Simple AI decision making function
-function determineAIAction(player:any, currentBet:number, gameState:any) {
+function determineAIAction(player: any, currentBet: number, gameState: any) {
     const randomStrategy = Math.random();
     const playerBet = player.bet || 0;
     const callAmount = currentBet - playerBet;
-    
+
     // If player can check, decide between check and raise
     if (currentBet === 0 || playerBet === currentBet) {
         if (randomStrategy < 0.7) {
@@ -299,11 +299,11 @@ function determineAIAction(player:any, currentBet:number, gameState:any) {
             return { action: 'raise', amount: raiseAmount };
         }
     }
-    
+
     // If player needs to call
     // Decide based on call amount relative to chips
     const callRatio = callAmount / player.chips;
-    
+
     if (callRatio > 0.5 || randomStrategy < 0.3) {
         return { action: 'fold' };
     } else if (randomStrategy < 0.7) {

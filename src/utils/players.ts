@@ -1,14 +1,14 @@
 import { v1 as uuid } from 'uuid';
 import { handlePhaseShift, reconcilePot, anteUpBlinds, determineBlindIndices } from './bet';
 import { dealMissingCommunityCards, showDown, generateDeckOfCards, shuffle, dealPrivateCards } from './cards';
-import axios from 'axios';
+
 import { GameState, Player } from './types/index';
 
-export const generateTable = async (): Promise<Player[]> => {
+export const generateTable = (): Player[] => {
   const users: Player[] = [{
     id: uuid(),
     name: 'Player 1',
-    avatarURL: '/player.ng',
+    avatarURL: '/player.png',
     cards: [],
     showDownHand: {
       hand: [],
@@ -26,34 +26,46 @@ export const generateTable = async (): Promise<Player[]> => {
     stackInvestment: 0,
     robot: false
   }];
-
-  const response = await axios.get(`https://randomuser.me/api/?results=4&nat=us,gb,fr`);
-  response.data.results
-    .map((user:any) => {
-      const randomizedChips = Math.floor(Math.random() * (20000 - 18000)) + 18000;
-      return {
-        id: uuid(),
-        name: `${user.name.first.charAt(0).toUpperCase()}${user.name.first.slice(1)} ${user.name.last.charAt(0).toUpperCase()}${user.name.last.slice(1)}`,
-        avatarURL: user.picture.large,
-        cards: [],
-        chips: randomizedChips,
-        roundStartChips: randomizedChips,
-        roundEndChips: randomizedChips,
-        currentRoundChipsInvested: 0,
-        showDownHand: {
-          hand: [],
-          descendingSortHand: [],
-        },
-        bet: 0,
-        betReconciled: false,
-        folded: false,
-        allIn: false,
-        robot: true,
-        canRaise: true,
-        stackInvestment: 0,
-      };
-    })
-    .forEach((user:any) => users.push(user));
+  // Create arrays of first and last names for random generation
+  const firstNames = [
+    'James', 'Mary', 'John', 'Patricia', 'Robert', 'Jennifer', 'Michael', 'Linda',
+    'William', 'Elizabeth', 'David', 'Susan', 'Joseph', 'Jessica', 'Thomas'
+  ];
+  
+  const lastNames = [
+    'Smith', 'Johnson', 'Williams', 'Jones', 'Brown', 'Davis', 'Miller', 'Wilson',
+    'Moore', 'Taylor', 'Anderson', 'Thomas', 'Jackson', 'White', 'Harris'
+  ];
+  
+  // Create 4 random users
+  for (let i = 0; i < 4; i++) {
+    const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+    const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+    const randomizedChips = Math.floor(Math.random() * (20000 - 18000)) + 18000;
+    const avatarId = Math.floor(Math.random() * 8) + 1;
+    
+    users.push({
+      id: uuid(),
+      name: `${firstName} ${lastName}`,
+      avatarURL: `/avatars/robot-${avatarId}.png`,
+      cards: [],
+      chips: randomizedChips,
+      roundStartChips: randomizedChips,
+      roundEndChips: randomizedChips,
+      currentRoundChipsInvested: 0,
+      showDownHand: {
+        hand: [],
+        descendingSortHand: [],
+      },
+      bet: 0,
+      betReconciled: false,
+      folded: false,
+      allIn: false,
+      robot: true,
+      canRaise: true,
+      stackInvestment: 0,
+    });
+  }
 
   return users;
 }
