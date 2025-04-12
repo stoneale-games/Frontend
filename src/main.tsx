@@ -12,7 +12,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ApolloProviderWrapper from "./providers/ApolloWrapper.tsx";
 import ErrorBoundary from "./components/ErrorBoundary.tsx";
 import { ToastContainer } from 'react-toastify';
-import PApp from "./Pokerapp.jsx";
+import PApp from "./Pokerapp.js";
 const queryClient = new QueryClient();
 const router = createBrowserRouter([
   {

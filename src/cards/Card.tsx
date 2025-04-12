@@ -1,9 +1,9 @@
 import React from 'react';
 import {
   renderUnicodeSuitSymbol
-} from '../utils/ui.jsx';
+} from '../utils/ui.js';
 
-const Card = (props) => {
+const Card = (props: any) => {
   const {
     cardData: {
       suit,

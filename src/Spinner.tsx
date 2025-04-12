@@ -1,10 +1,10 @@
 import React from 'react';
 
-const Spinner = props => {
-	return(
+const Spinner = () => {
+	return (
 		<div className="loading-container">
 			<div className='spinner-container' >
-				<img src={'/assets/chip.svg'} alt="Loading..."/>
+				<img src={'/assets/chip.svg'} alt="Loading..." />
 			</div>
 		</div>
 	)

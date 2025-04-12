@@ -1,9 +1,9 @@
-import React from 'react';
 
-function Track ({ source, target, getTrackProps }) {
-  return(
+
+function Track({ source, target, getTrackProps }: any) {
+  return (
     <div
-    style={{
+      style={{
         position: 'absolute',
         height: 10,
         zIndex: 1,
@@ -13,10 +13,10 @@ function Track ({ source, target, getTrackProps }) {
         cursor: 'pointer',
         left: `${source.percent}%`,
         width: `${target.percent - source.percent}%`,
-    }}
-    {...getTrackProps()}
+      }}
+      {...getTrackProps()}
     />
   )
 }
-  
+
 export default Track;

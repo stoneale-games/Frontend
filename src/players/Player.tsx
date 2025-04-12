@@ -9,7 +9,26 @@ const dealerChipImageURL = "/assets/chip.svg";
 const chipCountImageURL = "./assets/chips.svg";
 const playerBetImageURL = "./assets/bet.svg";
 
-const Player = (props) => {
+interface PlayerProps {
+  arrayIndex: any;
+  playerAnimationSwitchboard: any;
+  endTransition: any;
+  hasDealerChip: any;
+  isActive: any;
+  phase: any;
+  clearCards: any;
+  player: {
+    robot: any;
+    folded: any;
+    cards: any;
+    avatarURL: any;
+    name: any;
+    chips: any;
+    bet: any;
+  };
+}
+
+const Player = (props: PlayerProps) => {
   const {
     arrayIndex,
     playerAnimationSwitchboard,
@@ -33,44 +52,43 @@ const Player = (props) => {
     if (hasDealerChip) {
       return (
         <div className="dealer-chip-icon-container">
-          <img src={dealerChipImageURL} alt="Dealer Chip"/>
+          <img src={dealerChipImageURL} alt="Dealer Chip" />
         </div>
       )
     } else return null;
   }
 
   const renderPlayerCards = () => {
-    let applyFoldedClassname;
+    let applyFoldedClassname: any;
 
     if (folded || clearCards) {
       applyFoldedClassname = true
     }
 
     if (robot) {
-      return cards.map((card, index)=> {
+      return cards.map((card: any, index: any) => {
         if (phase !== 'showdown') {
-          return(
-            <HiddenCard key={index} cardData={card} applyFoldedClassname={applyFoldedClassname}/>
+          return (
+            <HiddenCard key={index} cardData={card} applyFoldedClassname={applyFoldedClassname} />
           );
         } else {
-          // Reset Animation Delay
-          const cardData = {...card, animationDelay: 0}
-          return(
-            <Card key={index} cardData={cardData} applyFoldedClassname={applyFoldedClassname}/>
+          const cardData = { ...card, animationDelay: 0 }
+          return (
+            <Card key={index} cardData={cardData} applyFoldedClassname={applyFoldedClassname} />
           );
         }
       });
     }
     else {
-      return cards.map((card, index) => {
-        return(
-          <Card key={index} cardData={card} applyFoldedClassname={applyFoldedClassname}/>
+      return cards.map((card: any, index: any) => {
+        return (
+          <Card key={index} cardData={card} applyFoldedClassname={applyFoldedClassname} />
         );
       });
     }
   }
 
-  const ifAnimating = (playerBoxIndex) => { 
+  const ifAnimating = (playerBoxIndex: any) => {
     if (playerAnimationSwitchboard[playerBoxIndex].isAnimating) {
       return true;
     } else {
@@ -87,27 +105,27 @@ const Player = (props) => {
         endTransition={endTransition}
       />
       <div className='centered-flex-row abscard'>
-        { renderPlayerCards() }
+        {renderPlayerCards()}
       </div>
       <div className="player-entity--container">
         <div className="player-avatar--container">
-          <img 
-            className={`player-avatar--image${(isActive ? ' activePlayer' : '')}`} 
-            src={avatarURL} 
-            alt="Player Avatar" 
+          <img
+            className={`player-avatar--image${(isActive ? ' activePlayer' : '')}`}
+            src={avatarURL}
+            alt="Player Avatar"
           />
-          <h5 className="player-info--name" style={{'fontSize': (name.length < 14) ? 12 : 10}}>
+          <h5 className="player-info--name" style={{ 'fontSize': (name.length < 14) ? 12 : 10 }}>
             {`${name}`}
           </h5>
           <div className="player-info--stash--container">
-            <img className="player-info--stash--image" src={chipCountImageURL} alt="Player Stash"/>
+            <img className="player-info--stash--image" src={chipCountImageURL} alt="Player Stash" />
             <h5>{`${chips}`}</h5>
           </div>
           <div className="player-info--bet--container">
             <img className="player-info--bet--image" src={playerBetImageURL} alt="Player Bet" />
             <h5>{`Bet: ${bet}`}</h5>
           </div>
-          { renderDealerChip() }
+          {renderDealerChip()}
         </div>
       </div>
     </div>
