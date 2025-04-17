@@ -7,8 +7,8 @@ import { toast } from "react-toastify";
 
 export function WalletOptions({ onClose }: { onClose: () => void }) {
   const { connectors, connect } = useConnect();
- const [address,setAddress] = React.useState<`0x${string}`>();
-  const {disconnect} = useDisconnect();
+  const [address, setAddress] = React.useState<`0x${string}`>();
+  const { disconnect } = useDisconnect();
   const setToken = useAuthStore((state: any) => state.setToken);
   const { signMessageAsync } = useSignMessage();
 
@@ -64,13 +64,13 @@ export function WalletOptions({ onClose }: { onClose: () => void }) {
 
       alert("Error verifying challenge string");
       disconnect();
-      toast.error("Error verifying challenge string");  
+      toast.error("Error verifying challenge string");
       console.error("GraphQL Error:", error);
     },
   });
 
   return (
-    <div className="flex flex-col gap-4 items-center w-[500px] rounded-lg bg-secondary-950 p-5">
+    <div className="flex flex-col gap-4 items-center w-[500px] rounded-lg dark:bg-primary-100 bg-secondary-950  p-5">
       <div className="flex items-center justify-end w-full">
         <button onClick={onClose} className="border rounded-full py-1 text-xl px-3">
           x
@@ -86,17 +86,18 @@ export function WalletOptions({ onClose }: { onClose: () => void }) {
               { connector },
               {
                 onSuccess: (data) => {
-                  console.log("Connected Wallet Address:", data.accounts[0]);
-                    setAddress(data.accounts[0]);
-                  if (data.accounts[0] ) {
-                    getString({ variables: { address: data.accounts[0] } });
-                  } else {
-          
-                    console.log("Stored address:", address);
-                    disconnect();
-                    setAddress(undefined);
-                    console.error("Wallet address mismatch detected.");
-                  }
+                  // console.log("Connected Wallet Address:", data.accounts[0]);
+                  // setAddress(data.accounts[0]);
+                  // if (data.accounts[0]) {
+                  //   getString({ variables: { address: data.accounts[0] } });
+                  // } else {
+
+                  //   console.log("Stored address:", address);
+                  //   disconnect();
+                  //   setAddress(undefined);
+                  //   console.error("Wallet address mismatch detected.");
+                  // }
+                  setToken("token");
                 },
               }
             )
