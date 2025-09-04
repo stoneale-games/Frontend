@@ -1,0 +1,125 @@
+"""
+Directs the executor to defer this fragment when the `if` argument is true or undefined.
+"""
+directive @defer(
+    """Deferred when true or undefined."""
+    if: Boolean = true
+
+    """Unique name"""
+    label: String
+) on FRAGMENT_SPREAD | INLINE_FRAGMENT
+
+"""
+Indicates exactly one field must be supplied and this field must not be `null`.
+"""
+directive @oneOf on INPUT_OBJECT
+
+type ActionResult {
+    success: Boolean!
+    message: String
+    game: Game
+}
+
+type AuthResponse {
+    token: String!
+    user: User!
+}
+
+type Card {
+    suit: String!
+    rank: Int!
+}
+
+type Game {
+    id: ID!
+    players: [Player!]!
+    communityCards: [Card!]!
+    pot: Int!
+    phase: String!
+    turnIndex: Int!
+    isActive: Boolean!
+    lastAction: String
+}
+
+type GameConnection {
+    games: [Game!]!
+    totalCount: Int!
+    hasNextPage: Boolean!
+    hasPreviousPage: Boolean!
+}
+
+input GameFilters {
+    isActive: Boolean
+    phase: String
+    minPot: Int
+    maxPot: Int
+    minPlayers: Int
+    maxPlayers: Int
+    minBlind: Int
+    maxBlind: Int
+    hasSeats: Boolean
+    playerId: ID
+    createdAfter: String
+    createdBefore: String
+}
+
+input GameSort {
+    field: GameSortField!
+    direction: SortDirection!
+}
+
+enum GameSortField {
+    CREATED_AT
+    POT_SIZE
+    PLAYER_COUNT
+    SMALL_BLIND
+    BIG_BLIND
+    LAST_ACTIVITY
+}
+
+type Mutation {
+    createGame(smallBlind: Int!, bigBlind: Int!): Game!
+    joinGame(gameId: ID!, userId: ID!, chips: Int!): Game!
+    leaveGame(gameId: ID!, userId: ID!): Boolean!
+    startGame(gameId: ID!): Game!
+    endGame(gameId: ID!): Boolean!
+    performAction(gameId: ID!, playerId: ID!, action: String!, amount: Int): ActionResult!
+    connectWallet(walletAddress: String!, signature: String!): AuthResponse!
+    updateProfile(username: String, email: String): User!
+}
+
+type Player {
+    id: ID!
+    userId: ID!
+    seat: Int!
+    chips: Int!
+    status: String!
+    isFolded: Boolean!
+    isAllIn: Boolean!
+    hand: [Card!]
+}
+
+type Query {
+    getGame(gameId: ID!): Game
+    getPlayerHand(gameId: ID!, playerId: ID!): [Card!]!
+    fetchGames(filters: GameFilters, sort: [GameSort!], limit: Int = 20, offset: Int = 0): GameConnection!
+    me: User
+    getNonce(walletAddress: String!): String!
+}
+
+enum SortDirection {
+    ASC
+    DESC
+}
+
+type Subscription {
+    gameUpdates(gameId: ID!): Game
+}
+
+type User {
+    id: ID!
+    walletAddress: String!
+    username: String
+    email: String
+    chips: Int!
+}

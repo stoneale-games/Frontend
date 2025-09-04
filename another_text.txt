@@ -1,0 +1,113 @@
+// /components/game/GameTable.tsx
+"use client";
+
+
+import useGameStore from '@/hooks/useGameStore';
+
+import { Pot } from '@/components/game/Pot';
+
+import GameBoard from '@/components/game/GameBoard';
+import { PlayerProfile } from "@/components/game/PlayerProfile";
+import { useTablePositions } from '@/hooks/useTablePositions';
+import {UserIcon} from "lucide-react";
+import {useAuthStore} from "@/store/authStore.ts";
+import {useEffect} from "react";
+
+export function GameTable({game}) {
+    const {players,isActive,setGame,updateGame,pot,lastAction, reset, phase, turnIndex,communityCards} = useGameStore();
+
+    const {user} = useAuthStore();
+
+    useEffect(() => {
+        setGame(game);
+    },[game, setGame]);
+
+    const {
+        tablePositions,
+        createSeatAssignments,
+        getPlayerPositionType
+    } = useTablePositions();
+
+
+
+    // Create seat assignments using the hook
+    const seatAssignments = createSeatAssignments(players);
+
+    return (
+        <GameBoard className="w-full h-full max-w-5xl relative ">
+
+            {/* Render all 11 positions */}
+            {tablePositions.map((position, index) => {
+                const isDealer = position.positionType === "dealer";
+                const seatNumber = index;
+                const player = seatAssignments[seatNumber];
+
+                return (
+                    <div key={`seat-${index}`} className="absolute" style={{
+                        top: position.top,
+                        bottom: position.bottom,
+                        left: position.left,
+                        right: position.right,
+                        transform: position.transform
+                    }}>
+                        {/* Show dealer position indicator */}
+                        {/* {isDealer && !player && (
+                            <div>
+                                <div className="w-16 h-16 rounded-full bg-black/50 border-2 border-yellow-400 flex items-center justify-center">
+                                    <span className="text-yellow-400 font-bold text-xs"><UserIcon/></span>
+                                </div>
+                                <Pot total={pot??0} />
+                            </div>
+
+                        )}
+
+                         Show empty seat indicator
+                        {!isDealer && !player && (
+                            <div className="w-20 h-20 rounded-full bg-black/30 border-2 border-gray-600 border-dashed flex items-center justify-center opacity-50">
+                                <span className="text-gray-400 font-bold text-xs">SEAT {seatNumber}</span>
+                            </div>
+                        )}*/}
+
+                        {/* Show player if seat is occupied */}
+                        {player && (
+                            <PlayerProfile
+                                player={player}
+                                isSelf={player.id === user.id}
+                                position={getPlayerPositionType(position.positionType)}
+                                seatNumber={seatNumber} // Pass the seat number
+                            />
+                        )}
+                    </div>
+                );
+            })}
+
+            {/* Center of the table */}
+          {/*  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-6">
+
+                <CommunityCards cards={store.communityCards} />
+            </div>
+
+             Action controls
+            {isMyTurn && self && (
+                <div className="absolute bottom-4 -right-80 z-20 p-10">
+                    <ActionControls
+                        possibleActions={possibleActions}
+                        callAmount={callAmount}
+                        minRaise={minRaise}
+                        maxRaise={self.stack}
+                        onFold={store.fold}
+                        onCheck={store.check}
+                        onCall={store.call}
+                        onBet={store.bet}
+                        onRaise={store.bet}
+                    />
+                </div>
+            )}
+
+             Test Button
+            <Button className="absolute top-20 left-4 z-20" size="sm" onClick={store.dealNextPhase}>
+                Deal
+            </Button>*/}
+        </GameBoard>
+    );
+}

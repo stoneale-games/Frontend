@@ -1,0 +1,154 @@
+'use client';
+// /components/game/PlayerProfile.tsx
+
+import React, { useEffect, useState } from 'react';
+import { cn } from '@/lib/utils';
+import type { PlayerState } from './types';
+import { Card } from './Card';
+import { ChipStack } from './ChipStack';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Progress } from '@/components/ui/progress';
+import { DealerButton } from "@/components/game/DealerButton";
+import { AnimatePresence, motion } from "framer-motion";
+import { useTablePositions } from '@/hooks/useTablePositions';
+import {useAuthStore} from "@/store/authStore.ts";
+
+interface PlayerProfileProps {
+    player: PlayerState;
+    isSelf: boolean;
+    position?: 'bottom' | 'left' | 'top-left' | 'top-center' | 'top-right' | 'right';
+    seatNumber?: number; // seat number for table positioning
+}
+
+export const PlayerProfile: React.FC<PlayerProfileProps> = ({
+                                                                player,
+                                                                isSelf,
+                                                                position = 'bottom',
+                                                                seatNumber = 1
+                                                            }) => {
+    const isFolded = player.status === 'folded';
+    const [progress, setProgress] = useState(100);
+    const { user } = useAuthStore();
+
+    const {
+        getTablePosition,
+        getCardPositionClasses,
+        getStackPositionClasses,
+        getBetPositionClasses
+    } = useTablePositions();
+
+    // Get the table position data for this seat
+    const tablePosition = getTablePosition(seatNumber);
+
+    useEffect(() => {
+        if (player.isTurn) {
+            setProgress(100);
+
+            const timer = setInterval(() => {
+                setProgress(prev => {
+                    if (prev <= 0) {
+                        clearInterval(timer);
+                        // handle turn timeout here
+                        return 0;
+                    }
+                    return prev - 5;
+                });
+            }, 500);
+
+            return () => clearInterval(timer);
+        }
+    }, [player.isTurn]);
+
+    return (
+        <div className={cn(
+            'relative flex flex-col items-center gap-2 transition-all duration-300',
+            isFolded && 'opacity-40',
+            tablePosition.customClasses?.container // ✅ seat-specific container classes
+        )}>
+
+            {/* Avatar + Username wrapper */}
+            <div className="relative flex flex-col items-center">
+                {/* Player Name (slightly on top of avatar) */}
+                {
+                    player.id !== user.id && (
+                        <div className="absolute -top-3 left-10 text-white font-bold text-sm text-center px-2 py-1 bg-black/50 rounded-md backdrop-blur-sm z-30">
+                            {player.name}
+                        </div>
+                    )
+                }
+
+                {
+                    player.userId === user.id && (
+                        <div className="absolute -top-3 left-10 text-white font-bold text-sm text-center px-2 py-1 bg-black/50 rounded-md backdrop-blur-sm z-30">
+                            {"You"}
+                        </div>
+                    )
+                }
+
+                {/* Avatar */}
+                <div className={cn(
+                    "relative w-20 h-20 rounded-full border-4 transition-all duration-300 overflow-hidden z-20",
+                    player.isTurn && !isFolded
+                        ? "border-yellow-400 shadow-lg shadow-yellow-400/50"
+                        : "border-gray-600",
+                    isFolded && "grayscale"
+                )}>
+                    <Avatar className="w-full h-full">
+                        <AvatarImage src={player.avatarUrl} alt={player.name} className="object-cover" />
+                        <AvatarFallback className="text-lg font-bold bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                            {player.id.slice(0, 6).toUpperCase()}
+                        </AvatarFallback>
+                    </Avatar>
+
+                    {/* Turn Timer */}
+                    {player.isTurn && !isFolded && (
+                        <div className="absolute bottom-0 left-0 right-0">
+                            <Progress value={progress} className="h-1 rounded-none" />
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Current Bet */}
+            <AnimatePresence>
+                {player.currentBet > 0 && (
+                    <motion.div
+                        layoutId={`bet-stack-${player.id}`}
+                        className={getBetPositionClasses(seatNumber)} // ✅ seatNumber now
+                        exit={{ opacity: 0, scale: 0.5 }}
+                    >
+                        <ChipStack amount={player.currentBet} />
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Stack Amount */}
+            {/* <div className={getStackPositionClasses(seatNumber)}>  ✅ seatNumber
+                ${player.stack.toLocaleString()}
+            </div>*/}
+
+            {/* Player Cards
+            <div className={getCardPositionClasses(seatNumber)}>  ✅ seatNumber
+                <Card
+                    cardId={player.cards[0]}
+                    height={60}
+                    width={42}
+                    isFaceDown={!isSelf || isFolded}
+                />
+                <Card
+                    cardId={player.cards[1]}
+                    height={60}
+                    width={42}
+                    isFaceDown={!isSelf || isFolded}
+                />
+            </div>
+*/}
+            {/* Dealer Button */}
+            {/*  {player.isDealer && (
+                <div className="absolute -top-20 right-20 z-30">
+                    <DealerButton />
+                </div>
+            )}*/}
+        </div>
+    );
+};
