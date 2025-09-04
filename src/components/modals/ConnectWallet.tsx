@@ -3,6 +3,10 @@
 import { useEffect, useCallback } from "react";
 import { useAccount, useSignMessage, useDisconnect } from "wagmi";
 import { useAuthStore } from "@/store/authStore";
+import {WalletOption} from "@/components/modals/wallet-option.tsx";
+import {Account} from "@/components/modals/wallet-disconnect.tsx";
+import {WalletOptions} from "@/components/modals/wallet-options.tsx";
+import {Button} from "@/components/ui/button.tsx";
 
 /**
  * ConnectWallet component handles wallet connection, authentication,
@@ -69,8 +73,10 @@ export function ConnectWallet() {
     return (
         <div className="space-y-4 p-10">
             {/* The Wagmi/Web3Modal button for connecting and selecting networks */}
-            <w3m-button />
-            {isConnected && <w3m-network-button />}
+            <WalletOptions/>
+            {isConnected && <Button onClick={handleDisconnect}>
+                Disconnect
+            </Button>}
 
             {/* Loading indicator */}
             {loading && <p>Authenticating...</p>}
