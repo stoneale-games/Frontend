@@ -9,7 +9,7 @@ if(!projectId){
     throw new Error("VITE_PROJECT_ID is not defined. Please set it in your environment variables.");
 }
 
-const metadata = {
+/*const metadata = {
     name:"appkit",
     description:"Appkit Example - EVM",
     url: "/stoneal.com",
@@ -26,7 +26,7 @@ const modal = createAppKit({
         socials: ['google', 'x','github', 'discord','farcaster'],
         emailShowWallets:true
     }
-})
+})*/
 
 export function WalletProvider({ children , cookies}: { children: ReactNode, cookies: string | null }) {
     const initialState = cookieToInitialState(wagmiAdapter.wagmiConfig as Config, cookies)

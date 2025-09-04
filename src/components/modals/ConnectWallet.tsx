@@ -3,8 +3,6 @@
 import { useEffect, useCallback } from "react";
 import { useAccount, useSignMessage, useDisconnect } from "wagmi";
 import { useAuthStore } from "@/store/authStore";
-import {WalletOption} from "@/components/modals/wallet-option.tsx";
-import {Account} from "@/components/modals/wallet-disconnect.tsx";
 import {WalletOptions} from "@/components/modals/wallet-options.tsx";
 import {Button} from "@/components/ui/button.tsx";
 
