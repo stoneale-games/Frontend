@@ -2,8 +2,10 @@
 import {type Config, cookieToInitialState, WagmiProvider} from "wagmi";
 import {projectId, wagmiAdapter, wagmiConfig} from "@/lib/wagmi";
 import type {ReactNode} from "react";
+/*
 import {createAppKit} from "@reown/appkit";
 import { mainnet, arbitrum } from '@reown/appkit/networks'
+*/
 
 if(!projectId){
     throw new Error("VITE_PROJECT_ID is not defined. Please set it in your environment variables.");
