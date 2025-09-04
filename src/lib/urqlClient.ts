@@ -6,7 +6,7 @@ import {getCookie} from "@/lib/cookieHelper.ts";
 
 // Create a WebSocket client for subscriptions
 const wsClient = createWSClient({
-    url: 'http://api.stoneale.com/query', // must match server
+    url: 'https://api.stoneale.com/query', // must match server
     connectionParams: () => {
         const token = getCookie("token") || '';
         return { headers: { Authorization: token ? `Bearer ${token}` : '' } };
@@ -15,7 +15,7 @@ const wsClient = createWSClient({
 
 
 export const urqlClient = new Client({
-    url: 'http://api.stoneale.com/query',
+    url: 'https://api.stoneale.com/query',
     exchanges: [
         cacheExchange,
         fetchExchange,
