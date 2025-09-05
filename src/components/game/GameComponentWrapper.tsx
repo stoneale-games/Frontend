@@ -6,10 +6,9 @@ import {useAuthStore} from "@/store/authStore.ts";
 export const GameComponentWrapper = () => {
     const { game } = useGameStore();
     const { user } = useAuthStore();
-
-
     const checkIfUserInGame =
         game?.players.some(player => player.userId === user?.id) || false;
+
     return (
         <div className="relative flex flex-col h-screen">
             <GameTable userInGame={checkIfUserInGame}/>

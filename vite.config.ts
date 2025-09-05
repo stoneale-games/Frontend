@@ -29,3 +29,4 @@ export default defineConfig({
         allowedHosts: ['1e693b894951.ngrok-free.app'], // add your ngrok URL here
     },*/
 })
+

@@ -5,7 +5,6 @@ import { SidebarButton } from "@/components/lobby/SidebarButton";
 
 // Lucide React Icons
 import {
-    Gamepad2,
     Image as ImageIcon,
     LandPlot,
     ScrollText,
@@ -13,35 +12,38 @@ import {
 } from "lucide-react";
 
 // TanStack Router
-import { useRouter } from "@tanstack/react-router";
+import {useRouter, useRouterState} from "@tanstack/react-router";
 
 const LobbySidebar = () => {
     const router = useRouter();
-    const pathname = router.state.location.pathname;
 
+    const pathname = useRouterState({
+        select: (state) => state.location.pathname,
+    });
+    console.log(pathname);
     const sidebarLinks = [
         {
-            href: "/lobby",
+            href: "/app/lobby",
             label: "Lobby",
             icon: <LandPlot size={40} />,
         },
-        {
+       /* {
             href: "/games/poker",
             label: "Games",
             icon: <Gamepad2 size={40} />,
-        },
+        },*/
         {
             href: "/nfts",
             label: "NFTs",
             icon: <ImageIcon size={40} />,
         },
         {
-            href: "/wallet",
+            href: "/app/wallet",
             label: "Wallet",
             icon: <Wallet size={40} />,
         },
         {
-            href: "/rules",
+            href: "/app/game/rules",
             label: "Read Rules",
             icon: <ScrollText size={40} />,
         },

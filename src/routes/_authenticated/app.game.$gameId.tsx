@@ -16,11 +16,12 @@ function RouteComponent() {
 
 export function GamePage() {
     const { gameId } = Route.useParams();
-    const { setGame } = useGameStore();
+    const { setGame, game } = useGameStore();
 
 
     // Initial query
     const [{ data, fetching, error }] = useQuery({ query: GET_GAME, variables: { gameId } });
+console.log("here is the game ", game);
 
     // Subscription
     useSubscription(
