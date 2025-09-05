@@ -4,7 +4,7 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import {connectWallet, fetchNonce, logout} from "@/api/auth";
 import {getMe} from "@/api/user";
 
-type User = {
+export type User = {
     id: string;
     walletAddress: string;
     username?: string;

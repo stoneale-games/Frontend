@@ -5,7 +5,7 @@ import "./index.css";
 
 // Import the generated route tree
 import { routeTree } from './routeTree.gen'
-import {type AuthContext, createAuthContext, getAllCookiesAsString} from "@/lib/cookieHelper.ts";
+import {type AuthContext, createAuthContext, /*getAllCookiesAsString*/} from "@/lib/cookieHelper.ts";
 import Providers from "@/providers/Providers.tsx";
 
 // Create a new router instance
@@ -23,14 +23,14 @@ declare module '@tanstack/react-router' {
     }
 }
 
-const string = getAllCookiesAsString();
+/*const string = getAllCookiesAsString();*/
 // Render the app
 const rootElement = document.getElementById('root')!
 if (!rootElement.innerHTML) {
     const root = ReactDOM.createRoot(rootElement)
     root.render(
         <StrictMode>
-            <Providers cookies={string}>
+            <Providers>
                 <RouterProvider router={router} />
             </Providers>
 

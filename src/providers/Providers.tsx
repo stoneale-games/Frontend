@@ -7,11 +7,11 @@ import {urqlClient} from "@/lib/urqlClient";
 import {Toaster} from "@/components/ui/sonner.tsx";
 import React from "react";
 
-export default function Providers({ children,cookies }: { children: React.ReactNode , cookies:string|null}) {
+export default function Providers({ children}: { children: React.ReactNode }) {
     return (
         <QueryProvider>
                <Provider value={urqlClient}>
-                   <WalletProvider cookies={cookies}>
+                   <WalletProvider  >
                        {children}
                    </WalletProvider>
                </Provider>
