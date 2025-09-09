@@ -73,7 +73,12 @@ export const login = (token: string, options?: Cookies.CookieAttributes) => {
 }
 
 export const logout = () => {
-    removeCookie('token')
+    removeCookie('token');
+    removeCookie("wagmi.store");
+    console.log("removed this");
+    /*redirect({ to: '/' });*/ // this is equivalent to `navigate('/')`
+    window.location.href = '/';
+
     // Optional: redirect to login page
     // window.location.href = '/login'
 }

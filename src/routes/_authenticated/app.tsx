@@ -1,10 +1,12 @@
 // src/routes/app/index.tsx
-import {createFileRoute, Outlet, redirect} from '@tanstack/react-router'
+import {createFileRoute, Outlet} from '@tanstack/react-router'
 import LobbySidebar from "@/components/lobby/LobbySidebar.tsx";
-import {isAuthenticated} from "@/lib/cookieHelper.ts";
+import {deleteCookie, isAuthenticated} from "@/lib/cookieHelper.ts";
+import {toast} from "sonner";
 
 
 export const Route = createFileRoute('/_authenticated/app')({
+
     beforeLoad: () => {
         //ctx
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -18,18 +20,14 @@ export const Route = createFileRoute('/_authenticated/app')({
         }*/
 
         if (!isAuthenticated()) {
-            console.log("user not authenticated...")
-
-            const url = new URL(window.location.href)
-            url.searchParams.delete("redirect") // remove any existing redirect param
-
-            throw redirect({
-                to: '/',
-                search: {
-                    redirect: url.pathname + url.search, // only clean path + other params
-                },
-            })
+            console.log("user not authenticated...");
+            toast.error("User not authenticated... please login");
+            deleteCookie('token');
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 1500); // delay 1.5s
         }
+
 
     },
     component: () => (

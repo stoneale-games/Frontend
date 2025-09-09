@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Wallet} from "lucide-react"
 import {WalletConnectors} from "@/components/wallet/WalletConnectors.tsx";
 import {WalletStatus} from "@/components/wallet/WalletStatus.tsx";
+import {logout} from "@/lib/cookieHelper.ts";
 
 
 // Main component with modal trigger
@@ -34,7 +35,10 @@ export function WalletManager() {
                                 Connect Your Wallet
                             </DialogTitle>
                         </DialogHeader>
-                        <WalletConnectors onConnect={() => setIsModalOpen(false)} />
+                        <WalletConnectors onConnect={() => {
+                            logout();
+                            setIsModalOpen(false)
+                        }} />
                     </DialogContent>
                 </Dialog>
             ) : (

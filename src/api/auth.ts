@@ -61,4 +61,5 @@ export async function connectWallet(walletAddress: string, signature: string) {
 export async function logout() {
     // Only client-side
    deleteCookie("token");
+
 }
