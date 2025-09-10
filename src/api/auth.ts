@@ -38,12 +38,14 @@ const CONNECT_WALLET = gql`
 
 export async function connectWallet(walletAddress: string, signature: string) {
     try {
+        console.log("Connecting wallet:", walletAddress, signature);
         const result = await urqlClient
             .mutation(CONNECT_WALLET, { walletAddress, signature })
             .toPromise();
 
+
         if (!result.data?.connectWallet) {
-            throw new Error("connectWallet mutation failed");
+            throw new Error("connectWallet mutation failed", result.error);
         }
 
         const { token } = result.data.connectWallet;

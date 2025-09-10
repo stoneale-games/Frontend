@@ -17,6 +17,10 @@ type AuthState = {
     token: string | null;
     loading: boolean;
     hasHydrated: boolean;
+    newAuthenticate: (
+        walletAddress: string,
+        signMessage: string,
+    ) => Promise<void>;
     authenticate: (
         walletAddress: string,
         signMessageAsync: (args: { message: string }) => Promise<string>
@@ -39,6 +43,17 @@ export const useAuthStore = create<AuthState>()(
                 try {
                     const nonce = await fetchNonce(walletAddress);
                     const signature = await signMessageAsync({ message: nonce });
+                    const authData = await connectWallet(walletAddress, signature);
+
+                    set({ user: authData.user, token: authData.token, loading: false });
+                } catch (err) {
+                    console.error("Auth failed:", err);
+                    set({ user: null, token: null, loading: false });
+                }
+            },
+            newAuthenticate: async (walletAddress, signature) => {
+                set({ loading: true });
+                try {
                     const authData = await connectWallet(walletAddress, signature);
 
                     set({ user: authData.user, token: authData.token, loading: false });

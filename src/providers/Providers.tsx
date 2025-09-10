@@ -1,19 +1,21 @@
-"use client";
 
-import { WalletProvider } from "./WalletProvider";
 import QueryProvider from "./QueryProvider";
 import {Provider} from "urql";
 import {urqlClient} from "@/lib/urqlClient";
 import {Toaster} from "@/components/ui/sonner.tsx";
 import React from "react";
+import {AppKitProvider} from "@/lib/reown_app_kit_config.tsx";
 
 export default function Providers({ children}: { children: React.ReactNode }) {
     return (
         <QueryProvider>
                <Provider value={urqlClient}>
-                   <WalletProvider  >
+                  {/* <WalletProvider  >
                        {children}
-                   </WalletProvider>
+                   </WalletProvider>*/}
+                   <AppKitProvider>
+                       {children}
+                   </AppKitProvider>
                </Provider>
 
             <Toaster

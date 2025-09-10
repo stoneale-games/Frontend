@@ -22,6 +22,8 @@ function Index() {
        <>
            <nav className="flex justify-end w-full absolute z-50">
 
+               {/* <ExampleConnectButton/>*/}
+
                <ConnectWallet/>
 
 
