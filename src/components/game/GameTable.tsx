@@ -25,7 +25,7 @@ export function GameTable({userInGame}:{userInGame:boolean}) {
                  {game.lastAction}
              </div>
 
-            {userInGame && (
+            {userInGame && !game.winner && (
                 <div>
                     <PlayerActions />
                 </div>

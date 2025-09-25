@@ -8,6 +8,9 @@ import { toast } from "sonner";
 import { useNavigate } from "@tanstack/react-router";
 import {LEAVE_GAME, START_GAME} from "@/query-types/game.ts";
 import {getErrorMessage} from "@/lib/helpers.ts";
+/*
+import {PlayerWinningHand} from "@/components/game/player/PlayerWinningHand.tsx";
+*/
 
 export const GameRightSidebar = () => {
     const { game, clearGame } = useGameStore();
@@ -84,6 +87,10 @@ export const GameRightSidebar = () => {
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Users className="h-4 w-4" /> {game.players.length} Players
             </div>
+
+           {/* <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                 <PlayerWinningHand wH={game.winner}/>
+            </div>*/}
 
             {me && (
                 <div className="flex items-center gap-2 text-sm text-blue-600 font-medium">

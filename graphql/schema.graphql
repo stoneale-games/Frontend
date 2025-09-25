@@ -39,6 +39,8 @@ type Game {
     turnIndex: Int!
     isActive: Boolean!
     lastAction: String
+    winner: GameWinner
+    completedAt: String
 }
 
 type GameConnection {
@@ -75,6 +77,15 @@ enum GameSortField {
     SMALL_BLIND
     BIG_BLIND
     LAST_ACTIVITY
+}
+
+type GameWinner {
+    playerId: ID!
+    userId: ID!
+    handRank: Int!
+    handDescription: String!
+    winningHand: [Card!]!
+    amountWon: Int!
 }
 
 type Mutation {

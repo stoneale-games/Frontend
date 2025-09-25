@@ -28,11 +28,21 @@ export interface GameState {
     players: PlayerState[];
     communityCards: Array<{rank:Rank,suit:Suit}>;
     pot:number;
-    phase:"pre-flop"|"waiting";
+    phase:"pre-flop"|"waiting"|"showdown"|"completed"|"turn"|"flop";
     turnIndex:number;
     isActive:boolean;
     lastAction:string;
+    winner:GameWinner;
+    completedAt:string;
 
+}
+
+export interface GameWinner {
+    playerId: string;
+    userId: string;
+    handRank: number;
+    winningHand?: Array<{rank:Rank,suit:Suit}>;
+    amountWon: number;
 }
 
 

@@ -3,11 +3,14 @@ import {useAuthStore} from "@/store/authStore.ts";
 import {useTablePositions} from "@/hooks/useTablePositions.ts";
 import {Card} from "@/components/game/Card.tsx";
 import type {CardType, PlayerState, Rank, Suit} from "@/components/game/types.ts";
+import {useGameStore} from "@/store/gameStore.ts";
 
 export const PlayerCards = ({player}:{player:PlayerState}) => {
     const {user} = useAuthStore();
     const {getCardPositionClasses} = useTablePositions();
+    const {game} = useGameStore();
     const isSelf = user?.id === player.userId;
+    const gameEnded = game?.phase === "showdown" || game?.phase === "completed";
     if(!player.hand) return null;
     return (
 
@@ -23,11 +26,10 @@ export const PlayerCards = ({player}:{player:PlayerState}) => {
                             cardType={cardType}
                             height={60}
                             width={42}
-                            isFaceDown={!isSelf || player.isFolded}
+                            isFaceDown={!isSelf && !gameEnded}
                         />
                     })
                 }
-
             </div>
     );
 };

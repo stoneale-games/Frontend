@@ -1,10 +1,10 @@
-import { StrictMode } from 'react'
+import {StrictMode} from 'react'
 import ReactDOM from 'react-dom/client'
-import { RouterProvider, createRouter } from '@tanstack/react-router'
+import {RouterProvider, createRouter} from '@tanstack/react-router'
 import "./index.css";
 
 // Import the generated route tree
-import { routeTree } from './routeTree.gen'
+import {routeTree} from './routeTree.gen'
 import {type AuthContext, createAuthContext, /*getAllCookiesAsString*/} from "@/lib/cookieHelper.ts";
 import Providers from "@/providers/Providers.tsx";
 import { ThirdwebProvider } from 'thirdweb/react';
@@ -13,7 +13,7 @@ import { ThirdwebProvider } from 'thirdweb/react';
 const router = createRouter({
     routeTree,
     context: {
-        auth: createAuthContext() as AuthContext , // Now synchronous
+        auth: createAuthContext() as AuthContext, // Now synchronous
     },
 })
 
@@ -32,9 +32,13 @@ if (!rootElement.innerHTML) {
     root.render(
         <StrictMode>
             <Providers>
-                 <ThirdwebProvider>
-                    <RouterProvider router={router} />
-                 </ThirdwebProvider>
+
+                <ThirdwebProvider>
+                    <RouterProvider router={router}/>
+                </ThirdwebProvider>
+
+
+
             </Providers>
 
         </StrictMode>,

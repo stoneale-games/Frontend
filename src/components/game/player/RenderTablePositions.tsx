@@ -36,6 +36,7 @@ export const RenderTablePositions = () => {
                             transform: position.transform,
                         }}
                     >
+
                         {player && (
                             <PlayerProfile
                                 player={player}

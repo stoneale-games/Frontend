@@ -93,6 +93,17 @@ export const GAME_UPDATES = gql`
         suit
         rank
       }
+        winner {
+            playerId
+            userId
+            handRank
+            handDescription
+            winningHand {
+                suit
+                rank
+            }
+            amountWon
+        }
       pot
       phase
       turnIndex
