@@ -31,10 +31,10 @@ function Index() {
            <main className="mx-auto">
                <div className="relative flex justify-center items-center w-full">
                    {/* Background Image */}
-                   <img src={lineCircle} alt="background_vector" />
+                   <img src={lineCircle} fetchPriority={"high"}   alt="background_vector" />
                    <Logo />
-                   <div className={"absolute -bottom-96"}>
-                       <img src={playCrypto} alt="play_crypto" width={900} height={700} />
+                   <div className={"absolute -bottom-80"}>
+                       <img src={playCrypto} fetchPriority={"high"} alt="play_crypto" width={900} height={700} />
                    </div>
                    <div className={"absolute flex -bottom-32 gap-32"}>
                        <div className={"-rotate-12"}>
