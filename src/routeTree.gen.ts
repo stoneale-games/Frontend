@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as AuthenticatedAppWalletRouteImport } from './routes/_authenticated/app.wallet'
+import { Route as AuthenticatedAppSettingsRouteImport } from './routes/_authenticated/app.settings'
 import { Route as AuthenticatedAppLobbyRouteImport } from './routes/_authenticated/app.lobby'
 import { Route as AuthenticatedAppGameRulesRouteImport } from './routes/_authenticated/app.game.rules'
 import { Route as AuthenticatedAppGameGameIdRouteImport } from './routes/_authenticated/app.game.$gameId'
@@ -31,6 +32,12 @@ const AuthenticatedAppWalletRoute = AuthenticatedAppWalletRouteImport.update({
   path: '/wallet',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const AuthenticatedAppSettingsRoute =
+  AuthenticatedAppSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
 const AuthenticatedAppLobbyRoute = AuthenticatedAppLobbyRouteImport.update({
   id: '/lobby',
   path: '/lobby',
@@ -53,6 +60,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/app/lobby': typeof AuthenticatedAppLobbyRoute
+  '/app/settings': typeof AuthenticatedAppSettingsRoute
   '/app/wallet': typeof AuthenticatedAppWalletRoute
   '/app/game/$gameId': typeof AuthenticatedAppGameGameIdRoute
   '/app/game/rules': typeof AuthenticatedAppGameRulesRoute
@@ -61,6 +69,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/app/lobby': typeof AuthenticatedAppLobbyRoute
+  '/app/settings': typeof AuthenticatedAppSettingsRoute
   '/app/wallet': typeof AuthenticatedAppWalletRoute
   '/app/game/$gameId': typeof AuthenticatedAppGameGameIdRoute
   '/app/game/rules': typeof AuthenticatedAppGameRulesRoute
@@ -70,6 +79,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
   '/_authenticated/app/lobby': typeof AuthenticatedAppLobbyRoute
+  '/_authenticated/app/settings': typeof AuthenticatedAppSettingsRoute
   '/_authenticated/app/wallet': typeof AuthenticatedAppWalletRoute
   '/_authenticated/app/game/$gameId': typeof AuthenticatedAppGameGameIdRoute
   '/_authenticated/app/game/rules': typeof AuthenticatedAppGameRulesRoute
@@ -80,6 +90,7 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/app/lobby'
+    | '/app/settings'
     | '/app/wallet'
     | '/app/game/$gameId'
     | '/app/game/rules'
@@ -88,6 +99,7 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/app/lobby'
+    | '/app/settings'
     | '/app/wallet'
     | '/app/game/$gameId'
     | '/app/game/rules'
@@ -96,6 +108,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated/app'
     | '/_authenticated/app/lobby'
+    | '/_authenticated/app/settings'
     | '/_authenticated/app/wallet'
     | '/_authenticated/app/game/$gameId'
     | '/_authenticated/app/game/rules'
@@ -129,6 +142,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppWalletRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/settings': {
+      id: '/_authenticated/app/settings'
+      path: '/settings'
+      fullPath: '/app/settings'
+      preLoaderRoute: typeof AuthenticatedAppSettingsRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/app/lobby': {
       id: '/_authenticated/app/lobby'
       path: '/lobby'
@@ -155,6 +175,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAppRouteChildren {
   AuthenticatedAppLobbyRoute: typeof AuthenticatedAppLobbyRoute
+  AuthenticatedAppSettingsRoute: typeof AuthenticatedAppSettingsRoute
   AuthenticatedAppWalletRoute: typeof AuthenticatedAppWalletRoute
   AuthenticatedAppGameGameIdRoute: typeof AuthenticatedAppGameGameIdRoute
   AuthenticatedAppGameRulesRoute: typeof AuthenticatedAppGameRulesRoute
@@ -162,6 +183,7 @@ interface AuthenticatedAppRouteChildren {
 
 const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppLobbyRoute: AuthenticatedAppLobbyRoute,
+  AuthenticatedAppSettingsRoute: AuthenticatedAppSettingsRoute,
   AuthenticatedAppWalletRoute: AuthenticatedAppWalletRoute,
   AuthenticatedAppGameGameIdRoute: AuthenticatedAppGameGameIdRoute,
   AuthenticatedAppGameRulesRoute: AuthenticatedAppGameRulesRoute,

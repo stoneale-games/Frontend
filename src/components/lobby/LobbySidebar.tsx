@@ -7,7 +7,7 @@ import { SidebarButton } from "@/components/lobby/SidebarButton";
 import {
     Image as ImageIcon,
     LandPlot,
-    ScrollText,
+    ScrollText, Settings2,
     Wallet,
 } from "lucide-react";
 
@@ -46,6 +46,11 @@ const LobbySidebar = () => {
             href: "/app/game/rules",
             label: "Read Rules",
             icon: <ScrollText size={40} />,
+        },
+        {
+            href: "/app/settings",
+            label: "Settings",
+            icon: <Settings2 size={40} />,
         },
     ];
 

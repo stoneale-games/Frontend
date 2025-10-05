@@ -4,7 +4,7 @@ import {Provider} from "urql";
 import {urqlClient} from "@/lib/urqlClient";
 import {Toaster} from "@/components/ui/sonner.tsx";
 import React from "react";
-import {AppKitProvider} from "@/lib/reown_app_kit_config.tsx";
+import {AppKitProvider} from "@/providers/AppKitProvider.tsx";
 
 export default function Providers({ children}: { children: React.ReactNode }) {
     return (

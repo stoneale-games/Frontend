@@ -9,6 +9,7 @@ import {Logo} from "@/components/Logo.tsx";
 import {ConnectWallet} from "@/components/modals/ConnectWallet.tsx";
 
 export const Route = createFileRoute('/')({
+
     component: Index,
 })
 
