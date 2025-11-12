@@ -25,7 +25,7 @@ Digital Wellness Assets: Tokenised in-app rewards for engagement and wellness ac
 
 User Data Sovereignty: Enabling users to control and selectively share their health-related data.
 
-Transparent Impact Tracking: Leveraging smart contracts (on Algorand) to measure and verify our social impact outcomes — such as engagement rates, mental wellness improvements, and therapist accessibility.
+Transparent Impact Tracking: Leveraging smart contracts to measure and verify our social impact outcomes — such as engagement rates, mental wellness improvements, and therapist accessibility.
 
 This approach ensures that every game session, reflection, and community interaction contributes to a verifiable impact ledger for mental health improvement.
 
