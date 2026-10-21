@@ -25,6 +25,8 @@
     "@rainbow-me/rainbowkit": "^2.2.8",
     "@reown/appkit": "^1.7.20",
     "@reown/appkit-adapter-wagmi": "^1.7.20",
+    "@stellar/freighter-api": "^6.0.1",
+    "@stellar/stellar-sdk": "^14.6.1",
     "@tailwindcss/vite": "^4.1.13",
     "@tanstack/react-router": "^1.131.27",
     "@tanstack/react-router-devtools": "^1.131.27",
@@ -48,7 +50,8 @@
     "urql": "^5.0.0",
     "viem": "^2.34.0",
     "wagmi": "^2.16.4",
-    "zod": "^4.1.9"
+    "zod": "^4.1.9",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 const AppKitButton = (props: React.HTMLAttributes<HTMLElement>) => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     return <appkit-button {...props} />;
 };
