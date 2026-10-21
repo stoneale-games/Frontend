@@ -10,6 +10,7 @@ import {
     fetchBadges,
     fetchBalances,
     fetchTotalEarned,
+    formatAmount,
     formatStroops,
     fundWithFriendbot,
     stellarConfig,
@@ -111,10 +112,21 @@ export function StellarWalletPanel() {
                         </div>
                     ) : (
                         <>
-                            <Row label="XLM" value={balances?.xlm ?? "-"} />
+                            <Row
+                                label="XLM"
+                                value={balances?.xlm ? formatAmount(balances.xlm) : "-"}
+                                title={balances?.xlm ?? undefined}
+                            />
                             <Row
                                 label="STONE"
-                                value={balances?.stone ?? (stellarConfig.stoneIssuer ? "Not enabled" : "-")}
+                                value={
+                                    balances?.stone
+                                        ? formatAmount(balances.stone)
+                                        : stellarConfig.stoneIssuer
+                                          ? "Not enabled"
+                                          : "-"
+                                }
+                                title={balances?.stone ?? undefined}
                             />
                             {balances?.funded && balances.stone === null && stellarConfig.stoneIssuer && (
                                 <Button size="sm" onClick={addTrustline} disabled={busy} className="gap-2">
@@ -155,11 +167,13 @@ export function StellarWalletPanel() {
     );
 }
 
-function Row({ label, value }: { label: string; value: string }) {
+function Row({ label, value, title }: { label: string; value: string; title?: string }) {
     return (
         <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
             <span className="text-sm">{label}</span>
-            <span className="text-sm font-mono">{value}</span>
+            <span className="text-sm font-mono" title={title}>
+                {value}
+            </span>
         </div>
     );
 }
