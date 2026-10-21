@@ -155,3 +155,19 @@ export const formatStroops = (value: bigint) => {
     const frac = (value % 10_000_000n).toString().padStart(7, "0").replace(/0+$/, "");
     return frac ? `${whole}.${frac}` : whole.toString();
 };
+
+/**
+ * Format a Horizon balance string (7 decimals) for humans:
+ * "10000.0000000" -> "10,000", "0.1234567" -> "0.12".
+ * Unparseable or empty input is returned unchanged.
+ */
+export const formatAmount = (value: string, maxDecimals = 2): string => {
+    const amount = Number(value);
+    if (value.trim() === "" || !Number.isFinite(amount)) {
+        return value;
+    }
+    return new Intl.NumberFormat("en-US", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: maxDecimals,
+    }).format(amount);
+};
