@@ -1,5 +1,6 @@
 
 import {WalletManager} from "@/components/wallet/WalletManager.tsx";
+import {FreighterConnect} from "@/components/wallet/FreighterConnect.tsx";
 import {isAuthenticated} from "@/lib/cookieHelper.ts";
 import {useEffect} from "react";
 import {useAuthStore} from "@/store/authStore.ts";
@@ -17,6 +18,7 @@ export function ConnectWallet() {
     }, [disconnect, logout]);
     return (
        <div className={"flex-col space-y-5 p-5"}>
+         <FreighterConnect/>
          <WalletManager/>
        </div>
     );

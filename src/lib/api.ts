@@ -18,6 +18,7 @@ const GAME_UPDATES = gql`
   }
 `;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function subscribeToGameUpdates(gameId: string, callback: (data: any) => void) {
     const { unsubscribe } = pipe(
         urqlClient.subscription(GAME_UPDATES, { gameId }),

@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { StellarWalletPanel } from "@/components/wallet/StellarWalletPanel.tsx";
 
 export const Route = createFileRoute('/_authenticated/app/wallet')({
   component: RouteComponent,
@@ -10,7 +11,7 @@ function RouteComponent() {
           <h1 className="text-3xl font-bold mb-4">Wallet</h1>
 
           <section className={"flex w-full"}>
-             <h1>Coming Soon..</h1>
+             <StellarWalletPanel/>
           </section>
 
       </main>
