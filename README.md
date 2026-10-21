@@ -41,7 +41,7 @@ npm run dev
 ```
 
 1. Install [Freighter](https://freighter.app) and switch it to **Testnet**.
-2. Click **Connect Freighter (Stellar)** on the home page.
+2. Click **Connect Freighter (Stellar)** on the home page, then **Login** to sign the sign-in message.
 3. Open **Wallet** in the app to fund your testnet account, enable STONE, and see your rewards and badges.
 
 | Variable | Description |
@@ -50,7 +50,6 @@ npm run dev
 | `VITE_STONE_ASSET_ISSUER` | Issuer account of the STONE asset |
 | `VITE_STONE_REWARDS_CONTRACT_ID` | `stone-rewards` Soroban contract ID |
 | `VITE_WELLNESS_BADGES_CONTRACT_ID` | `wellness-badges` Soroban contract ID |
-| `VITE_PROJECT_ID` | Reown/WalletConnect project ID (legacy EVM wallets) |
 
 Stellar code lives in:
 
@@ -61,7 +60,7 @@ Stellar code lives in:
 ## 🗺 Roadmap
 
 - [x] **Phase 1, Stellar foundations:** Freighter wallet connect, Stellar balances, STONE trustline, Soroban reward and badge contracts with CI.
-- [ ] **Phase 2, Stellar-native accounts:** sign in by having Freighter sign the backend nonce (SEP-10 / SEP-53), retire the EVM wallet flow, and make the game server sign `award` calls automatically.
+- [ ] **Phase 2, Stellar-native accounts:** ~~sign in with Freighter (SEP-53)~~ and ~~retire the EVM wallet flow~~ (done), then make the game server sign `award` calls automatically.
 - [ ] **Phase 3, wellness games and rewards:** breathing, mood check-in and journaling games that pay STONE, plus a badge gallery and profile.
 - [ ] **Phase 4, player-owned data:** opt-in, encrypted progress proofs that players can share selectively with therapists or programs.
 - [ ] **Phase 5, impact ledger and mainnet:** anonymised on-chain impact metrics, a security audit and mainnet launch.
