@@ -6,6 +6,7 @@ import {
     getNetworkDetails,
     isConnected,
     requestAccess,
+    signMessage,
     signTransaction,
 } from "@stellar/freighter-api";
 import { stellarConfig } from "@/lib/stellar.ts";
@@ -20,6 +21,8 @@ type StellarWalletState = {
     restore: () => Promise<void>;
     disconnect: () => void;
     signTx: (xdr: string) => Promise<string>;
+    /** SEP-53 message signature, base64 encoded (used for backend login). */
+    signMsg: (message: string) => Promise<string>;
 };
 
 export const useStellarWallet = create<StellarWalletState>()(
@@ -83,6 +86,22 @@ export const useStellarWallet = create<StellarWalletState>()(
                     throw new Error(res.error.message ?? String(res.error));
                 }
                 return res.signedTxXdr;
+            },
+
+            signMsg: async (message) => {
+                const address = get().address;
+                if (!address) throw new Error("Wallet not connected");
+                const res = await signMessage(message, {
+                    networkPassphrase: stellarConfig.networkPassphrase,
+                    address,
+                });
+                if (res.error || !res.signedMessage) {
+                    throw new Error(res.error?.message ?? "Message signing was rejected");
+                }
+                // Freighter v4+ returns base64, older versions return raw bytes
+                return typeof res.signedMessage === "string"
+                    ? res.signedMessage
+                    : res.signedMessage.toString("base64");
             },
         }),
         {
