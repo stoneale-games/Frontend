@@ -8,6 +8,8 @@
 
 Stoneale makes emotional well-being fun, engaging and accessible by blending casual games, community and science-backed wellness experiences. Players earn **STONE**, a Stellar asset, and soulbound **wellness badges**, which are Soroban smart contracts, for building healthy habits.
 
+🌐 **Live demo (Stellar testnet):** https://stoneale-bay.vercel.app
+
 This repo is the web app (React, Vite, TypeScript). The on-chain side lives in **[stoneale-contracts](https://github.com/stoneale-games/stoneale-contracts)**.
 
 ## 🌍 Vision
