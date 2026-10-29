@@ -9,8 +9,6 @@ jobs:
   build:
     name: lint · typecheck · build
     runs-on: ubuntu-latest
-    env:
-      VITE_PROJECT_ID: ci-placeholder
     steps:
       - uses: actions/checkout@v4
 

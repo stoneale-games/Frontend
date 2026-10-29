@@ -7,7 +7,6 @@ import "./index.css";
 import {routeTree} from './routeTree.gen'
 import {type AuthContext, createAuthContext, /*getAllCookiesAsString*/} from "@/lib/cookieHelper.ts";
 import Providers from "@/providers/Providers.tsx";
-import { ThirdwebProvider } from 'thirdweb/react';
 
 // Create a new router instance
 const router = createRouter({
@@ -32,13 +31,7 @@ if (!rootElement.innerHTML) {
     root.render(
         <StrictMode>
             <Providers>
-
-                <ThirdwebProvider>
-                    <RouterProvider router={router}/>
-                </ThirdwebProvider>
-
-
-
+                <RouterProvider router={router}/>
             </Providers>
 
         </StrictMode>,
